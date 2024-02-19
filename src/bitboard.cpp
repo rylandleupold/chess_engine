@@ -9,19 +9,30 @@ Bitboard::Bitboard(uint64_t b) {
 }
 
 void Bitboard::set(Square square) {
+	if (square == Square::noSquare) {
+		return;
+	}
 	bits = bits | ((uint64_t) 1ULL << square);
 }
 
 bool Bitboard::isSet(Square square) {
-	return ((uint64_t) 1ULL << square) & bits;
+	return (square == Square::noSquare) ? false : ((uint64_t) 1ULL << square) & bits;
 }
 
-int Bitboard::lsb() {
-	return (int) _tzcnt_u64(bits);
+bool Bitboard::isEmpty() {
+	return (bits == 0ULL);
 }
 
-int Bitboard::msb() {
-	return 63 - (int) _lzcnt_u64(bits);
+Square Bitboard::lsb() {
+	// Number of trailing zeros, or noSquare if bits is empty
+	int trailingZeros = _tzcnt_u64(bits);
+	return (trailingZeros == 64) ? Square::noSquare : Square(trailingZeros);
+}
+
+Square Bitboard::msb() {
+	// Number of bits in bitboard - number of leading 0s, or noSquare if bits is empty
+	int leadingZeros = _lzcnt_u64(bits);
+	return (leadingZeros == -1) ? Square::noSquare : Square(63 - leadingZeros);
 }
 
 int Bitboard::popCount() {

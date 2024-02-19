@@ -16,10 +16,15 @@ public:
 	Bitboard(uint64_t bits);
 
 	void set(Square Square);
+
 	bool isSet(Square square);
+	bool isEmpty();
+
 	int popCount();
-	int lsb();
-	int msb();
+
+	Square lsb();
+	Square msb();
+
 	void print();
 };
 

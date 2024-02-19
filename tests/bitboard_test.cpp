@@ -53,6 +53,17 @@ TEST(bitboard_test, bitboard_set_multiple_times_test) {
     ASSERT_EQ(bitboard.bits, expectedBits.to_ullong());
 }
 
+TEST(bitboard_test, bitboard_isEmpty_test) {
+    Bitboard b1;
+    ASSERT_TRUE(b1.isEmpty());
+
+    Bitboard b2(0ULL);
+    ASSERT_TRUE(b2.isEmpty());
+
+    Bitboard b3(12ULL);
+    ASSERT_FALSE(b3.isEmpty());    
+}
+
 TEST(bitboard_test, bitboard_lsb_test) {
     std::bitset<64> bitset;
     bitset.set(Square::B2);
@@ -65,6 +76,13 @@ TEST(bitboard_test, bitboard_lsb_test) {
     ASSERT_EQ(bitboard.lsb(), Square::B2);
 }
 
+TEST(bitboard_test, bitboard_empty_lsb_test) {
+    Bitboard bitboard;
+    // Test twice to ensure lsb is not cleared when checking
+    ASSERT_EQ(bitboard.lsb(), Square::noSquare);
+    ASSERT_EQ(bitboard.lsb(), Square::noSquare);
+}
+
 TEST(bitboard_test, bitboard_msb_test) {
     std::bitset<64> bitset;
     bitset.set(Square::C2);
@@ -75,6 +93,13 @@ TEST(bitboard_test, bitboard_msb_test) {
     // Test twice to ensure msb is not cleared when checking
     ASSERT_EQ(bitboard.msb(), Square::G8);
     ASSERT_EQ(bitboard.msb(), Square::G8);
+}
+
+TEST(bitboard_test, bitboard_empty_msb_test) {
+    Bitboard bitboard;
+    // Test twice to ensure lsb is not cleared when checking
+    ASSERT_EQ(bitboard.msb(), Square::noSquare);
+    ASSERT_EQ(bitboard.msb(), Square::noSquare);
 }
 
 TEST(bitboard_test, bitboard_popCount_test) {
