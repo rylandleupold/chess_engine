@@ -4,8 +4,8 @@ Bitboard::Bitboard() {
 	bits = 0ULL;
 }
 
-Bitboard::Bitboard(uint64_t bits) {
-	bits = bits;
+Bitboard::Bitboard(uint64_t b) {
+	bits = b;
 }
 
 void Bitboard::set(Square square) {
@@ -17,11 +17,15 @@ bool Bitboard::isSet(Square square) {
 }
 
 int Bitboard::lsb() {
-	return _BitScanForward64(0, bits);
+	return (int) _tzcnt_u64(bits);
 }
 
 int Bitboard::msb() {
-	return _BitScanReverse64(0, bits);
+	return 63 - (int) _lzcnt_u64(bits);
+}
+
+int Bitboard::popCount() {
+	return (int) __popcnt64(bits);
 }
 
 void Bitboard::print() {

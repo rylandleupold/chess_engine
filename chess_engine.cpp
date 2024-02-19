@@ -19,7 +19,6 @@ int main() {
 	b.set(Square::F2);
 
 	b.print();
-	std::cout << "ASDFASDFADFADSF\n";
-	
+
 	return 0;
 }
