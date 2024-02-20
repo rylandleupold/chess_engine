@@ -6,6 +6,7 @@ set(ChessEngineLib_src
     bitboard.h 
     bitboard.cpp 
     piece.h 
+    piece.cpp
     position.h
     position.cpp
     square.h

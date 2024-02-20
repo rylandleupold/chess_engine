@@ -10,6 +10,7 @@
 #include "src/position.h"
 #include "src/bitboard.h"
 #include "src/square.h"
+#include "src/piece.h"
 
 int main() {
 	Bitboard b;
@@ -20,5 +21,10 @@ int main() {
 
 	b.print();
 
-	return 0;
+	Position p;
+	p.pieceBitboards[Piece::whitePawn].print();
+	p.pieceBitboards[Piece::blackPawn].print();
+
+	p.printCombinedBitboards();
+	p.printPieceList();
 }

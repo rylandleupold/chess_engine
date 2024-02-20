@@ -119,5 +119,47 @@ TEST(bitboard_test, bitboard_popCount_test) {
     ASSERT_EQ(emptyBitboard.popCount(), 0);
 }
 
+TEST(bitboard_test, bitboard_clearLsb_test) {
+    std::bitset<64> bitset;
+    bitset.set(Square::B3);
+    bitset.set(Square::G3);
+    bitset.set(Square::H8);
 
+    Bitboard bitboard((uint64_t) bitset.to_ullong());
 
+    ASSERT_EQ(bitboard.lsb(), Square::B3);
+    bitboard.clearLsb();
+    ASSERT_EQ(bitboard.lsb(), Square::G3);
+    bitboard.clearLsb();
+    ASSERT_EQ(bitboard.lsb(), Square::H8);
+    bitboard.clearLsb();
+    ASSERT_EQ(bitboard.lsb(), Square::noSquare);
+    bitboard.clearLsb();
+    ASSERT_EQ(bitboard.lsb(), Square::noSquare);
+}
+
+TEST(bitboard_test, bitboard_getSetSquares_test) {
+    Bitboard bitboard;
+    bitboard.set(Square::A1);
+    bitboard.set(Square::B5);
+    bitboard.set(Square::D4);
+    bitboard.set(Square::G6);
+    bitboard.set(Square::H8);
+
+    std::vector<Square> expected = {
+        Square::A1,
+        Square::D4,
+        Square::B5,
+        Square::G6,
+        Square::H8
+    };
+    std::vector<Square> actual1 = bitboard.getSetSquares();
+    ASSERT_EQ(actual1, expected);
+    ASSERT_EQ(actual1.size(), 5);
+
+    // Make sure getSetSquares() does not clear bits
+    std::vector<Square> actual2 = bitboard.getSetSquares();
+    ASSERT_EQ(actual2, expected);
+    ASSERT_EQ(actual2.size(), 5);
+    ASSERT_FALSE(bitboard.isEmpty());
+}
