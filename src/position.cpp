@@ -3,9 +3,11 @@
 
 
 Position::Position() {
-	move = 0;
+	halfMoveCount = 0;
+	reversibleMoveCount = 0;
 	whiteToMove = true;
-	
+	enPassantTarget = Square::noSquare;
+
 	for (Piece p=Piece::whitePawn; p != noPiece; p=(Piece) (p+1)) {
 		Bitboard b(p);
 		pieceBitboards.insert({p, b});

@@ -5,7 +5,9 @@
 #include <string>
 #include <array>
 #include "bitboard.h"
+#include "castling_rights.h"
 #include "piece.h"
+#include "square.h"
 
 class Position {
 private:
@@ -25,9 +27,11 @@ public:
 		Piece::blackRook, Piece::blackKnight, Piece::blackBishop, Piece::blackQueen, Piece::blackKing, Piece::blackBishop, Piece::blackKnight, Piece::blackRook
 	};
 
-	int move;
+	int halfMoveCount;
+	int reversibleMoveCount;
 	bool whiteToMove;
-
+	CastlingRights castlingRights;
+	Square enPassantTarget;
 	Position();
 
 	void print();
