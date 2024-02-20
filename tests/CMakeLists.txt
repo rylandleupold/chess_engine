@@ -5,6 +5,7 @@ project(ChessEngineTests VERSION 1.0)
 set(ChessEngineTests_src 
     bitboard_test.cpp
     castling_rights_test.cpp
+    move_test.cpp
 )
 
 add_executable(${PROJECT_NAME} ${ChessEngineTests_src})

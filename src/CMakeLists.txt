@@ -7,6 +7,8 @@ set(ChessEngineLib_src
     bitboard.cpp 
     castling_rights.h
     castling_rights.cpp
+    move.h
+    move.cpp
     piece.h 
     piece.cpp
     position.h
