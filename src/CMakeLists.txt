@@ -5,6 +5,8 @@ project(ChessEngineLib)
 set(ChessEngineLib_src 
     bitboard.h 
     bitboard.cpp 
+    castling_rights.h
+    castling_rights.cpp
     piece.h 
     piece.cpp
     position.h
