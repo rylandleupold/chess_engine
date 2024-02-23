@@ -7,8 +7,12 @@ set(ChessEngineLib_src
     bitboard.cpp 
     castling_rights.h
     castling_rights.cpp
+    direction.h
+    mask.h
     move.h
     move.cpp
+    move_generator.h
+    move_generator.cpp
     piece.h 
     piece.cpp
     position.h

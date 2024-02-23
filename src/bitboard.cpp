@@ -1,11 +1,17 @@
 #include "bitboard.h"
 
+
 Bitboard::Bitboard() {
 	bits = 0ULL;
 }
 
 Bitboard::Bitboard(uint64_t b) {
 	bits = b;
+}
+
+Bitboard::Bitboard(Square s) {
+	bits = 0ULL;
+	set(s);
 }
 
 Bitboard::Bitboard(Piece piece) {
@@ -115,6 +121,44 @@ void Bitboard::clearLsb() {
 	bits = (bits & (bits - 1));
 }
 
+Bitboard Bitboard::shiftN() {
+	return Bitboard(bits << 8);
+}
+
+Bitboard Bitboard::shiftS() {
+	return Bitboard(bits >> 8);
+}
+
+Bitboard Bitboard::shiftE() {
+	uint64_t result = (~Mask::FILE_H & bits) << 1;
+	return Bitboard(result);
+}
+
+Bitboard Bitboard::shiftW() {
+	uint64_t result = (~Mask::FILE_A & bits) >> 1;
+	return Bitboard(result);
+}
+
+Bitboard Bitboard::shiftNE() {
+	uint64_t result = (~Mask::FILE_H & bits) << 9;
+	return Bitboard(result);
+}
+
+Bitboard Bitboard::shiftNW() {
+	uint64_t result = (~Mask::FILE_A & bits) << 7;
+	return Bitboard(result);
+}
+
+Bitboard Bitboard::shiftSE() {
+	uint64_t result = (~Mask::FILE_H & bits) >> 7;
+	return Bitboard(result);
+}
+
+Bitboard Bitboard::shiftSW() {
+	uint64_t result = (~Mask::FILE_A & bits) >> 9;
+	return Bitboard(result);
+}
+
 void Bitboard::print() {
 	std::cout << "___________________" << std::endl;
 	std::cout << "      Bitboard     " << std::endl;
@@ -132,4 +176,20 @@ void Bitboard::print() {
 	}
 	std::cout << "  =================" << std::endl;
 	std::cout << "   A B C D E F G H " << std::endl;
+}
+
+bool operator==(const Bitboard& b1, const Bitboard& b2) {
+	return b1.bits == b2.bits;
+}
+
+void Bitboard::operator=(const Bitboard& b) {
+	bits = b.bits;
+}
+
+Bitboard operator|(const Bitboard& b1, const Bitboard& b2) {
+	return Bitboard(b1.bits | b2.bits);
+}
+
+void Bitboard::operator|=(const Bitboard& b) {
+	bits |= b.bits;
 }

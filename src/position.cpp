@@ -8,6 +8,8 @@ Position::Position() {
 	whiteToMove = true;
 	enPassantTarget = Square::noSquare;
 
+	moveGenerator = new MoveGenerator();
+
 	for (Piece p=Piece::whitePawn; p != noPiece; p=(Piece) (p+1)) {
 		Bitboard b(p);
 		pieceBitboards.insert({p, b});

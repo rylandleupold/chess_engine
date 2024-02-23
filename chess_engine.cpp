@@ -20,11 +20,6 @@ int main() {
 	b.set(Square::F2);
 
 	b.print();
-
+	
 	Position p;
-	p.pieceBitboards[Piece::whitePawn].print();
-	p.pieceBitboards[Piece::blackPawn].print();
-
-	p.printCombinedBitboards();
-	p.printPieceList();
 }

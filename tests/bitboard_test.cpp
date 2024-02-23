@@ -163,3 +163,255 @@ TEST(bitboard_test, bitboard_getSetSquares_test) {
     ASSERT_EQ(actual2.size(), 5);
     ASSERT_FALSE(bitboard.isEmpty());
 }
+
+TEST(bitboard_test, bitboard_shiftN_test) {
+    Bitboard bitboard1;
+    bitboard1.set(Square::A1);
+    ASSERT_EQ(bitboard1.shiftN(), Bitboard(Square::A2));
+    ASSERT_EQ(bitboard1, Bitboard(Square::A1));
+
+    Bitboard bitboard2;
+    bitboard2.set(Square::H8);
+    ASSERT_EQ(bitboard2.shiftN(), Bitboard(0));
+
+    Bitboard bitboard3;
+    bitboard3.set(Square::B2);
+    bitboard3.set(Square::D3);
+    bitboard3.set(Square::F4);
+    bitboard3.set(Square::G8);
+
+    Bitboard expected;
+    expected.set(Square::B3);
+    expected.set(Square::D4);
+    expected.set(Square::F5);
+
+    ASSERT_EQ(bitboard3.shiftN(), expected);
+}
+
+TEST(bitboard_test, bitboard_shiftS_test) {
+    Bitboard bitboard1;
+    bitboard1.set(Square::A8);
+    ASSERT_EQ(bitboard1.shiftS(), Bitboard(Square::A7));
+    ASSERT_EQ(bitboard1, Bitboard(Square::A8));
+
+    Bitboard bitboard2;
+    bitboard2.set(Square::H1);
+    ASSERT_EQ(bitboard2.shiftS(), Bitboard(0));
+
+    Bitboard bitboard3;
+    bitboard3.set(Square::B2);
+    bitboard3.set(Square::D3);
+    bitboard3.set(Square::F4);
+    bitboard3.set(Square::G1);
+
+    Bitboard expected;
+    expected.set(Square::B1);
+    expected.set(Square::D2);
+    expected.set(Square::F3);
+
+    ASSERT_EQ(bitboard3.shiftS(), expected);
+}
+
+TEST(bitboard_test, bitboard_shiftE_test) {
+    Bitboard bitboard1;
+    bitboard1.set(Square::A5);
+    ASSERT_EQ(bitboard1.shiftE(), Bitboard(Square::B5));
+    ASSERT_EQ(bitboard1, Bitboard(Square::A5));
+
+    Bitboard bitboard2;
+    bitboard2.set(Square::G4);
+    ASSERT_EQ(bitboard2.shiftE(), Bitboard(Square::H4));
+
+    Bitboard bitboard3;
+    bitboard3.set(Square::H4);
+    ASSERT_EQ(bitboard3.shiftE(), Bitboard(0));
+
+    Bitboard bitboard4;
+    bitboard4.set(Square::B2);
+    bitboard4.set(Square::D3);
+    bitboard4.set(Square::F4);
+    bitboard4.set(Square::H1);
+
+    Bitboard expected;
+    expected.set(Square::C2);
+    expected.set(Square::E3);
+    expected.set(Square::G4);
+
+    ASSERT_EQ(bitboard4.shiftE(), expected);
+}
+
+TEST(bitboard_test, bitboard_shiftW_test) {
+    Bitboard bitboard1;
+    bitboard1.set(Square::B5);
+    ASSERT_EQ(bitboard1.shiftW(), Bitboard(Square::A5));
+    ASSERT_EQ(bitboard1, Bitboard(Square::B5));
+
+    Bitboard bitboard2;
+    bitboard2.set(Square::H4);
+    ASSERT_EQ(bitboard2.shiftW(), Bitboard(Square::G4));
+
+    Bitboard bitboard3;
+    bitboard3.set(Square::A4);
+    ASSERT_EQ(bitboard3.shiftW(), Bitboard(0));
+
+    Bitboard bitboard4;
+    bitboard4.set(Square::B2);
+    bitboard4.set(Square::D3);
+    bitboard4.set(Square::F4);
+    bitboard4.set(Square::A1);
+
+    Bitboard expected;
+    expected.set(Square::A2);
+    expected.set(Square::C3);
+    expected.set(Square::E4);
+
+    ASSERT_EQ(bitboard4.shiftW(), expected);
+}
+
+TEST(bitboard_test, bitboard_shiftNE_test) {
+    Bitboard bitboard1;
+    bitboard1.set(Square::A7);
+    ASSERT_EQ(bitboard1.shiftNE(), Bitboard(Square::B8));
+    ASSERT_EQ(bitboard1, Bitboard(Square::A7));
+
+    Bitboard bitboard2;
+    bitboard2.set(Square::C1);
+    ASSERT_EQ(bitboard2.shiftNE(), Bitboard(Square::D2));
+
+    Bitboard bitboard3;
+    bitboard3.set(Square::H4);
+    ASSERT_EQ(bitboard3.shiftNE(), Bitboard(0));
+
+    Bitboard bitboard4;
+    bitboard4.set(Square::B2);
+    bitboard4.set(Square::D3);
+    bitboard4.set(Square::F4);
+    bitboard4.set(Square::H1);
+
+    Bitboard expected;
+    expected.set(Square::C3);
+    expected.set(Square::E4);
+    expected.set(Square::G5);
+
+    ASSERT_EQ(bitboard4.shiftNE(), expected);
+}
+
+TEST(bitboard_test, bitboard_shiftNW_test) {
+    Bitboard bitboard1;
+    bitboard1.set(Square::H7);
+    ASSERT_EQ(bitboard1.shiftNW(), Bitboard(Square::G8));
+    ASSERT_EQ(bitboard1, Bitboard(Square::H7));
+
+    Bitboard bitboard2;
+    bitboard2.set(Square::C1);
+    ASSERT_EQ(bitboard2.shiftNW(), Bitboard(Square::B2));
+
+    Bitboard bitboard3;
+    bitboard3.set(Square::A4);
+    ASSERT_EQ(bitboard3.shiftNW(), Bitboard(0));
+
+    Bitboard bitboard4;
+    bitboard4.set(Square::B2);
+    bitboard4.set(Square::D3);
+    bitboard4.set(Square::F4);
+    bitboard4.set(Square::A1);
+
+    Bitboard expected;
+    expected.set(Square::A3);
+    expected.set(Square::C4);
+    expected.set(Square::E5);
+
+    ASSERT_EQ(bitboard4.shiftNW(), expected);
+}
+
+TEST(bitboard_test, bitboard_shiftSE_test) {
+    Bitboard bitboard1;
+    bitboard1.set(Square::A7);
+    ASSERT_EQ(bitboard1.shiftSE(), Bitboard(Square::B6));
+    ASSERT_EQ(bitboard1, Bitboard(Square::A7));
+
+    Bitboard bitboard2;
+    bitboard2.set(Square::C8);
+    ASSERT_EQ(bitboard2.shiftSE(), Bitboard(Square::D7));
+
+    Bitboard bitboard3;
+    bitboard3.set(Square::H2);
+    ASSERT_EQ(bitboard3.shiftSE(), Bitboard(0));
+
+    Bitboard bitboard4;
+    bitboard4.set(Square::B2);
+    bitboard4.set(Square::D3);
+    bitboard4.set(Square::F4);
+    bitboard4.set(Square::H8);
+
+    Bitboard expected;
+    expected.set(Square::C1);
+    expected.set(Square::E2);
+    expected.set(Square::G3);
+
+    ASSERT_EQ(bitboard4.shiftSE(), expected);
+}
+
+TEST(bitboard_test, bitboard_shiftSW_test) {
+    Bitboard bitboard1;
+    bitboard1.set(Square::H7);
+    ASSERT_EQ(bitboard1.shiftSW(), Bitboard(Square::G6));
+    ASSERT_EQ(bitboard1, Bitboard(Square::H7));
+
+    Bitboard bitboard2;
+    bitboard2.set(Square::B8);
+    ASSERT_EQ(bitboard2.shiftSW(), Bitboard(Square::A7));
+
+    Bitboard bitboard3;
+    bitboard3.set(Square::A5);
+    ASSERT_EQ(bitboard3.shiftSW(), Bitboard(0));
+
+    Bitboard bitboard4;
+    bitboard4.set(Square::B2);
+    bitboard4.set(Square::D3);
+    bitboard4.set(Square::F4);
+    bitboard4.set(Square::A2);
+
+    Bitboard expected;
+    expected.set(Square::A1);
+    expected.set(Square::C2);
+    expected.set(Square::E3);
+
+    ASSERT_EQ(bitboard4.shiftSW(), expected);
+}
+
+TEST(bitboard_test, bitboard_operatorEquals_test) {
+    Bitboard b1(0ULL);
+    Bitboard b2;
+    ASSERT_TRUE(b1 == b2);
+
+    Bitboard b3;
+    b3.set(Square::C5);
+    Bitboard b4(Square:: C5);
+    ASSERT_TRUE(b3 == b4);
+    ASSERT_FALSE(b1 == b3);
+
+    Bitboard b5(Square::A6);
+    Bitboard b6(Square::H7);
+    b5 = b6;
+    ASSERT_EQ(b5, b6);
+    ASSERT_EQ(b5.lsb(), Square::H7);
+    ASSERT_EQ(b5.popCount(), 1);
+    ASSERT_EQ(b6.lsb(), Square::H7);
+    ASSERT_EQ(b6.popCount(), 1);
+}
+
+TEST(bitboard_test, bitboard_operatorBitwiseOr_test) {
+    Bitboard b1(Square::A1);
+    Bitboard b2(Square::H8);
+
+    Bitboard expected(Square::A1);
+    expected.set(Square::H8);
+
+    ASSERT_EQ(b1 | b2, expected);
+    
+    b1 |= b2;
+    ASSERT_EQ(b1, expected);
+
+    ASSERT_EQ(Bitboard() | Bitboard(), Bitboard(0ULL));
+}

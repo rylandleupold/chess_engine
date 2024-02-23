@@ -6,6 +6,7 @@
 #include <array>
 #include "bitboard.h"
 #include "castling_rights.h"
+#include "move_generator.h"
 #include "piece.h"
 #include "square.h"
 
@@ -32,6 +33,7 @@ public:
 	bool whiteToMove;
 	CastlingRights castlingRights;
 	Square enPassantTarget;
+	MoveGenerator* moveGenerator;
 	Position();
 
 	void print();
