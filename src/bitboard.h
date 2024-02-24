@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "direction.h"
 #include "immintrin.h"
 #include "mask.h"
 #include "piece.h"
@@ -25,6 +26,7 @@ public:
 	Bitboard(Piece piece);
 
 	void set(Square Square);
+	void set(std::vector<Square>);
 
 	bool isSet(Square square);
 	bool isEmpty();
@@ -45,14 +47,18 @@ public:
 	Bitboard shiftS();
 	Bitboard shiftSW();
 	Bitboard shiftW();
+	Bitboard shift(Direction d);
 
 	void print();
 	friend bool operator==(const Bitboard& b1, const Bitboard& b2);
+	friend bool operator!=(const Bitboard& b1, const Bitboard& b2);
 	void operator=(const Bitboard& b);
 	friend Bitboard operator|(const Bitboard& b1, const Bitboard& b2);
 	void operator|=(const Bitboard& b);
-	friend Bitboard operator|(const Bitboard& b1, const Bitboard& b2);
-
+	friend Bitboard operator&(const Bitboard& b1, const Bitboard& b2);
+	void operator&=(const Bitboard& b);
+	friend Bitboard operator^(const Bitboard& b1, const Bitboard& b2);
+	void operator^=(const Bitboard& b);
 };
 
 #endif

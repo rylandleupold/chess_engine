@@ -81,6 +81,12 @@ void Bitboard::set(Square square) {
 	bits = bits | ((uint64_t) 1ULL << square);
 }
 
+void Bitboard::set(std::vector<Square> squares) {
+	for (Square s: squares) {
+		set(s);
+	}
+}
+
 bool Bitboard::isSet(Square square) {
 	return (square == Square::noSquare) ? false : ((uint64_t) 1ULL << square) & bits;
 }
@@ -159,6 +165,29 @@ Bitboard Bitboard::shiftSW() {
 	return Bitboard(result);
 }
 
+Bitboard Bitboard::shift(Direction d) {
+	switch (d) {
+		case Direction::NorthWest:
+			return shiftNW();
+		case Direction::North:
+			return shiftN();
+		case Direction::NorthEast:
+			return shiftNE();
+		case Direction::East:
+			return shiftE();
+		case Direction::SouthEast:
+			return shiftSE();
+		case Direction::South:
+			return shiftS();
+		case Direction::SouthWest:
+			return shiftSW();
+		case Direction::West:
+			return shiftW();
+		default:
+			return Bitboard();
+	}
+}
+
 void Bitboard::print() {
 	std::cout << "___________________" << std::endl;
 	std::cout << "      Bitboard     " << std::endl;
@@ -186,10 +215,30 @@ void Bitboard::operator=(const Bitboard& b) {
 	bits = b.bits;
 }
 
+bool operator!=(const Bitboard& b1, const Bitboard& b2) {
+	return !(b1 == b2);
+}
+
 Bitboard operator|(const Bitboard& b1, const Bitboard& b2) {
 	return Bitboard(b1.bits | b2.bits);
 }
 
 void Bitboard::operator|=(const Bitboard& b) {
 	bits |= b.bits;
+}
+
+Bitboard operator&(const Bitboard& b1, const Bitboard& b2) {
+	return Bitboard(b1.bits & b2.bits);
+}
+
+void Bitboard::operator&=(const Bitboard& b) {
+	bits &= b.bits;
+}
+
+Bitboard operator^(const Bitboard& b1, const Bitboard& b2) {
+	return Bitboard(b1.bits ^ b2.bits);
+}
+
+void Bitboard::operator^=(const Bitboard& b) {
+	bits ^= b.bits;
 }

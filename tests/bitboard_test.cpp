@@ -53,6 +53,19 @@ TEST(bitboard_test, bitboard_set_multiple_times_test) {
     ASSERT_EQ(bitboard.bits, expectedBits.to_ullong());
 }
 
+TEST(bitboard_Test, bitboard_setVector_test) {
+    std::vector<Square> setSquares = {Square::A1, Square::H8, Square::C5, Square::E6};
+    Bitboard expected;
+    expected.set(Square::A1);
+    expected.set(Square::H8);
+    expected.set(Square::C5);
+    expected.set(Square::E6);
+
+    Bitboard bitboard;
+    bitboard.set(setSquares);
+    ASSERT_EQ(bitboard, expected);
+}
+
 TEST(bitboard_test, bitboard_isEmpty_test) {
     Bitboard b1;
     ASSERT_TRUE(b1.isEmpty());
@@ -414,4 +427,39 @@ TEST(bitboard_test, bitboard_operatorBitwiseOr_test) {
     ASSERT_EQ(b1, expected);
 
     ASSERT_EQ(Bitboard() | Bitboard(), Bitboard(0ULL));
+}
+
+TEST(bitboard_test, bitboard_operatorBitwiseAnd_test) {
+    Bitboard b1(Square::A8);
+    b1.set(Square::C5);
+    Bitboard b2(Square::H1);
+    b2.set(Square::C5);
+
+    Bitboard expected(Square::C5);
+
+    ASSERT_EQ(b1 & b2, expected);
+    ASSERT_TRUE(b1.isSet(Square::A8));
+    ASSERT_TRUE(b2.isSet(Square::H1));
+
+    b1 &= b2;
+    ASSERT_EQ(b1, expected);
+    ASSERT_EQ(Bitboard() & Bitboard(), Bitboard(0ULL));
+}
+
+TEST(bitboard_test, bitboard_operatorBitwiseXOr_test) {
+    Bitboard b1(Square::A8);
+    b1.set(Square::C5);
+    Bitboard b2(Square::H1);
+    b2.set(Square::C5);
+
+    Bitboard expected(Square::A8);
+    expected.set(Square::H1);
+
+    ASSERT_EQ(b1 ^ b2, expected);
+    ASSERT_TRUE(b1.isSet(Square::C5));
+    ASSERT_TRUE(b2.isSet(Square::C5));
+
+    b1 ^= b2;
+    ASSERT_EQ(b1, expected);
+    ASSERT_EQ(Bitboard() ^ Bitboard(), Bitboard(0ULL));
 }

@@ -13,13 +13,5 @@
 #include "src/piece.h"
 
 int main() {
-	Bitboard b;
-	b.set(Square::G8);
-	b.set(Square::H8);
-	b.set(Square::B5);
-	b.set(Square::F2);
-
-	b.print();
-	
 	Position p;
 }
