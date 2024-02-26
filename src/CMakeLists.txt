@@ -7,6 +7,7 @@ set(ChessEngineLib_src
     bitboard.cpp 
     castling_rights.h
     castling_rights.cpp
+    color.h
     direction.h
     mask.h
     move.h

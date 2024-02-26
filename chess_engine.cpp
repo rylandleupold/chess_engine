@@ -14,4 +14,6 @@
 
 int main() {
 	Position p;
+	p.printCombinedBitboards();
+	p.printPieceList();
 }

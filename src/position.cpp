@@ -10,9 +10,9 @@ Position::Position() {
 
 	moveGenerator = new MoveGenerator();
 
-	for (Piece p=Piece::whitePawn; p != noPiece; p=(Piece) (p+1)) {
+	for (Piece p=Piece::blackPawn; p != noPiece; p=Piece(p+1)) {
 		Bitboard b(p);
-		pieceBitboards.insert({p, b});
+		pieceBitboards[p] = b;
 	};
 }
 
@@ -22,10 +22,8 @@ std::array<std::string, 8> Position::getCombinedBitboardsStr() {
 		pieces[i] = Piece::noPiece;
 	}
 
-	for (std::map<Piece, Bitboard>::iterator it=pieceBitboards.begin(); it != pieceBitboards.end(); it++) {
-		Piece p = it->first;
-		Bitboard b = it->second;
-		std::vector<Square> setSquares = b.getSetSquares();
+	for (Piece p=Piece::blackPawn; p!=Piece::noPiece; p=Piece(p+1)) {
+		std::vector<Square> setSquares = pieceBitboards[p].getSetSquares();
 		for (Square s : setSquares) {
 			pieces[s] = p;
 		}

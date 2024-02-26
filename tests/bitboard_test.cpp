@@ -53,7 +53,7 @@ TEST(bitboard_test, bitboard_set_multiple_times_test) {
     ASSERT_EQ(bitboard.bits, expectedBits.to_ullong());
 }
 
-TEST(bitboard_Test, bitboard_setVector_test) {
+TEST(bitboard_test, bitboard_setVector_test) {
     std::vector<Square> setSquares = {Square::A1, Square::H8, Square::C5, Square::E6};
     Bitboard expected;
     expected.set(Square::A1);
@@ -462,4 +462,15 @@ TEST(bitboard_test, bitboard_operatorBitwiseXOr_test) {
     b1 ^= b2;
     ASSERT_EQ(b1, expected);
     ASSERT_EQ(Bitboard() ^ Bitboard(), Bitboard(0ULL));
+}
+
+TEST(bitboard_test, bitboard_operatorBitwiseNot_test) {
+    Bitboard emptyBitboard;
+    Bitboard fullBitboard;
+    for (Square s=Square::A1; s<=Square::H8; s=Square(s+1)) {
+        fullBitboard.set(s);
+    }
+
+    ASSERT_EQ(~emptyBitboard, fullBitboard);
+    ASSERT_EQ(~fullBitboard, emptyBitboard);
 }

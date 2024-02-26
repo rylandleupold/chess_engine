@@ -5,8 +5,8 @@
 #include <string>
 
 enum Piece {
-    whitePawn, whiteKnight, whiteBishop, whiteRook, whiteQueen, whiteKing,
     blackPawn, blackKnight, blackBishop, blackRook, blackQueen, blackKing,
+    whitePawn, whiteKnight, whiteBishop, whiteRook, whiteQueen, whiteKing,
     noPiece
 };
 

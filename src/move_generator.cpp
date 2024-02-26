@@ -117,3 +117,26 @@ Bitboard MoveGenerator::negativeRayAttacks(Square origin, Direction direction, B
 Bitboard MoveGenerator::slidingPieceAttacks(Square origin, Direction direction) {
     return SLIDING_PIECE_MOVES[direction][origin];
 }
+
+Bitboard MoveGenerator::pawnCapturesWest(Bitboard pawns, Color color) {
+    return color == Color::black ? pawns.shiftSW() : pawns.shiftNW();
+}
+
+Bitboard MoveGenerator::pawnCapturesEast(Bitboard pawns, Color color) {
+    return color == Color::black ? pawns.shiftSE() : pawns.shiftNE();
+}
+
+Bitboard MoveGenerator::pawnPushes(Bitboard pawns, Color color, Bitboard occupied) {
+    Bitboard targets;
+    Bitboard singlePushes;
+    if (color == Color::black) {
+        singlePushes = (pawns.shiftS() & ~occupied);
+        targets |= singlePushes;
+        targets |= ((singlePushes & Mask::RANK_6).shiftS() & ~occupied);
+    } else {
+        singlePushes = (pawns.shiftN() & ~occupied);
+        targets |= singlePushes;
+        targets |= ((singlePushes & Mask::RANK_3).shiftN() & ~occupied);
+    }
+    return targets;
+}

@@ -242,3 +242,7 @@ Bitboard operator^(const Bitboard& b1, const Bitboard& b2) {
 void Bitboard::operator^=(const Bitboard& b) {
 	bits ^= b.bits;
 }
+
+Bitboard Bitboard::operator~() {
+	return Bitboard(~bits);
+}

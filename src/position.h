@@ -16,7 +16,7 @@ private:
 	std::array<std::string, 8> getPieceListStr();
 
 public:
-	std::map<Piece, Bitboard> pieceBitboards;
+	Bitboard pieceBitboards [12];
 	Piece pieceList [64] ={
 		Piece::whiteRook, Piece::whiteKnight, Piece::whiteBishop, Piece::whiteQueen, Piece::whiteKing, Piece::whiteBishop, Piece::whiteKnight, Piece::whiteRook,
 		Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn,

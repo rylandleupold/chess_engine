@@ -302,3 +302,78 @@ TEST(move_generator_test, move_generator_queenAttacks_blocked_test) {
             D1, D2, D4, D5, B3, C3, E3, F3, C4, C2, B5, A6, E4, E2, F5, G6});
     ASSERT_EQ(m.queenAttacks(Square::D3, occupied), expectedMiddle);
 }
+
+TEST(move_generator_test, move_generator_pawnCapturesWest_test) {
+    MoveGenerator m;
+    Bitboard blackPawns;
+    Bitboard whitePawns;
+    ASSERT_EQ(m.pawnCapturesWest(blackPawns, Color::black), Bitboard(0ULL));
+    ASSERT_EQ(m.pawnCapturesWest(whitePawns, Color::white), Bitboard(0ULL));
+
+    blackPawns.set(std::vector<Square> {A7, B6, C4, D2, D4, F7, G5, H2});
+    Bitboard expectedBlack;
+    expectedBlack.set(std::vector<Square> {A5, B3, C1, C3, E6, F4, G1});
+    ASSERT_EQ(m.pawnCapturesWest(blackPawns, Color::black), expectedBlack);
+
+    whitePawns.set(std::vector<Square> {A4, B2, C5, D3, F6, F5, H7});
+    Bitboard expectedWhite;
+    expectedWhite.set(std::vector<Square> {A3, B6, C4, E7, E6, G8});
+    ASSERT_EQ(m.pawnCapturesWest(whitePawns, Color::white), expectedWhite);
+}
+
+TEST(move_generator_test, move_generator_pawnCatpuresEast_test) {
+    MoveGenerator m;
+    Bitboard blackPawns;
+    Bitboard whitePawns;
+    ASSERT_EQ(m.pawnCapturesEast(blackPawns, Color::black), Bitboard(0ULL));
+    ASSERT_EQ(m.pawnCapturesEast(whitePawns, Color::white), Bitboard(0ULL));
+
+    blackPawns.set(std::vector<Square> {A7, B6, C4, D7, D6, F2, H3});
+    Bitboard expectedBlack;
+    expectedBlack.set(std::vector<Square> {B6, C5, D3, E6, E5, G1});
+    ASSERT_EQ(m.pawnCapturesEast(blackPawns, Color::black), expectedBlack);
+
+    whitePawns.set(std::vector<Square> {A2, B4, B7, D3, E2, F7, G5, H2});
+    Bitboard expectedWhite;
+    expectedWhite.set(std::vector<Square> {B3, C5, C8, E4, F3, G8, H6});
+    ASSERT_EQ(m.pawnCapturesEast(whitePawns, Color::white), expectedWhite);
+}
+
+TEST(move_generator_test, move_generator_pawnPushes_test) {
+    MoveGenerator m;
+    Bitboard blackPawns;
+    Bitboard whitePawns;
+    Bitboard occupied;
+    ASSERT_EQ(m.pawnPushes(blackPawns, Color::black, occupied), Bitboard(0ULL));
+    ASSERT_EQ(m.pawnPushes(whitePawns, Color::white, occupied), Bitboard(0ULL));
+
+    blackPawns.set(std::vector<Square> {A7, B6, C4, D7, D5, F2, H3});
+    Bitboard expectedBlack;
+    expectedBlack.set(std::vector<Square> {A6, A5, B5, C3, D6, D5, D4, F1, H2});
+    ASSERT_EQ(m.pawnPushes(blackPawns, Color::black, occupied), expectedBlack);
+
+    whitePawns.set(std::vector<Square> {A2, B4, B7, D3, E2, F7, G5, H2});
+    Bitboard expectedWhite;
+    expectedWhite.set(std::vector<Square> {A3, A4, B5, B8, D4, E3, E4, F8, G6, H3, H4});
+    ASSERT_EQ(m.pawnPushes(whitePawns, Color::white, occupied), expectedWhite);
+}
+
+TEST(move_generator_test, move_generator_pawnPushes_blocked_test) {
+    MoveGenerator m;
+    Bitboard blackPawns;
+    Bitboard whitePawns;
+    Bitboard occupiedBlack;
+    Bitboard occupiedWhite;
+
+    blackPawns.set(std::vector<Square> {A7, B6, C4, D7, D5, F2, H3});
+    occupiedBlack.set(std::vector<Square> {A5, B5, B3, B4, D3, D6, F1, H1});
+    Bitboard expectedBlack;
+    expectedBlack.set(std::vector<Square> {A6, C3, D4, H2});
+    ASSERT_EQ(m.pawnPushes(blackPawns, Color::black, occupiedBlack), expectedBlack);
+
+    whitePawns.set(std::vector<Square> {A2, B4, B7, D3, E2, F7, G5, H2});
+    occupiedWhite.set(std::vector<Square> {A3, B5, C4, E4, C3, F8, H5});
+    Bitboard expectedWhite;
+    expectedWhite.set(std::vector<Square> {B8, D4, E3, G6, H3, H4});
+    ASSERT_EQ(m.pawnPushes(whitePawns, Color::white, occupiedWhite), expectedWhite);
+}
