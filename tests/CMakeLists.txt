@@ -5,8 +5,11 @@ project(ChessEngineTests VERSION 1.0)
 set(ChessEngineTests_src 
     bitboard_test.cpp
     castling_rights_test.cpp
+    fen_parser_test.cpp
     move_test.cpp
     move_generator_test.cpp
+    piece_test.cpp
+    position_test.cpp
 )
 
 add_executable(${PROJECT_NAME} ${ChessEngineTests_src})

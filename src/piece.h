@@ -5,13 +5,20 @@
 #include <string>
 
 enum Piece {
-    blackPawn, blackKnight, blackBishop, blackRook, blackQueen, blackKing,
-    whitePawn, whiteKnight, whiteBishop, whiteRook, whiteQueen, whiteKing,
+    blackPawn, whitePawn, 
+    blackKnight, whiteKnight, 
+    blackBishop, whiteBishop, 
+    blackRook, whiteRook, 
+    blackQueen, whiteQueen,
+    blackKing, whiteKing,
     noPiece
 };
 
 std::ostream& operator<<(std::ostream& os, const Piece piece);
 
 const char* pieceToString(Piece piece);
+const Piece charToPiece(char c);
+
+const bool isWhite(Piece piece);
 
 #endif

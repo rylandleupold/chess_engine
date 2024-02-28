@@ -339,6 +339,24 @@ TEST(move_generator_test, move_generator_pawnCatpuresEast_test) {
     ASSERT_EQ(m.pawnCapturesEast(whitePawns, Color::white), expectedWhite);
 }
 
+TEST(move_generator_test, move_generator_pawnCatpures_test) {
+    MoveGenerator m;
+    Bitboard blackPawns;
+    Bitboard whitePawns;
+    ASSERT_EQ(m.pawnCaptures(blackPawns, Color::black), Bitboard(0ULL));
+    ASSERT_EQ(m.pawnCaptures(whitePawns, Color::white), Bitboard(0ULL));
+
+    blackPawns.set(std::vector<Square> {A7, B6, C4, D7, D6, F2, H3});
+    Bitboard expectedBlack;
+    expectedBlack.set(std::vector<Square> {B6, A5, C5, B3, D3, C6, E6, C5, E5, E1, G1, G2});
+    ASSERT_EQ(m.pawnCaptures(blackPawns, Color::black), expectedBlack);
+
+    whitePawns.set(std::vector<Square> {A2, B4, B7, D3, E2, F7, G5, H2});
+    Bitboard expectedWhite;
+    expectedWhite.set(std::vector<Square> {B3, A5, C5, A8, C8, C4, E4, D3, F3, E8, G8, F6, H6, G3});
+    ASSERT_EQ(m.pawnCaptures(whitePawns, Color::white), expectedWhite);
+}
+
 TEST(move_generator_test, move_generator_pawnPushes_test) {
     MoveGenerator m;
     Bitboard blackPawns;

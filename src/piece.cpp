@@ -1,5 +1,10 @@
 #include "piece.h"
 
+const bool isWhite(Piece piece) {
+    // Black pieces have even indices
+    return (piece % 2 != 0);
+}
+
 std::ostream& operator<<(std::ostream& os, const Piece piece) {
     switch (piece) {
         case (Piece::whitePawn): return os << "P";
@@ -38,3 +43,21 @@ const char* pieceToString(Piece piece) {
         default: return "";
     }
 };
+
+const Piece charToPiece(char c) {
+    switch (c) {
+        case ('p'): return Piece::blackPawn;
+        case ('P'): return Piece::whitePawn;
+        case ('n'): return Piece::blackKnight;
+        case ('N'): return Piece::whiteKnight;
+        case ('b'): return Piece::blackBishop;
+        case ('B'): return Piece::whiteBishop;
+        case ('r'): return Piece::blackRook;
+        case ('R'): return Piece::whiteRook;
+        case ('q'): return Piece::blackQueen;
+        case ('Q'): return Piece::whiteQueen;
+        case ('k'): return Piece::blackKing;
+        case ('K'): return Piece::whiteKing;
+        default: return Piece::noPiece;
+    }
+}

@@ -50,6 +50,7 @@ public:
 	Bitboard shift(Direction d);
 
 	void print();
+	void print(char c);
 	friend bool operator==(const Bitboard& b1, const Bitboard& b2);
 	friend bool operator!=(const Bitboard& b1, const Bitboard& b2);
 	void operator=(const Bitboard& b);

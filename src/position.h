@@ -1,11 +1,13 @@
 #ifndef POSITION_H
 #define POSITION_H
 
+#include <array>
+#include <iostream>
 #include <map>
 #include <string>
-#include <array>
 #include "bitboard.h"
 #include "castling_rights.h"
+#include "fen_parser.h"
 #include "move_generator.h"
 #include "piece.h"
 #include "square.h"
@@ -14,10 +16,14 @@ class Position {
 private:
 	std::array<std::string, 8> getCombinedBitboardsStr();
 	std::array<std::string, 8> getPieceListStr();
+	void initializeAttacksTo();
+	void initializeAttacksFrom();
+	void initializeOccupiedFromPieceList();
+	void initializePieceBitboardFromPieceList();
 
 public:
 	Bitboard pieceBitboards [12];
-	Piece pieceList [64] ={
+	std::array<Piece, 64> pieceList ={
 		Piece::whiteRook, Piece::whiteKnight, Piece::whiteBishop, Piece::whiteQueen, Piece::whiteKing, Piece::whiteBishop, Piece::whiteKnight, Piece::whiteRook,
 		Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn,
 		Piece::noPiece, Piece::noPiece, Piece::noPiece, Piece::noPiece, Piece::noPiece, Piece::noPiece, Piece::noPiece, Piece::noPiece,
@@ -27,18 +33,26 @@ public:
 		Piece::blackPawn, Piece::blackPawn, Piece::blackPawn, Piece::blackPawn, Piece::blackPawn, Piece::blackPawn, Piece::blackPawn, Piece::blackPawn,
 		Piece::blackRook, Piece::blackKnight, Piece::blackBishop, Piece::blackQueen, Piece::blackKing, Piece::blackBishop, Piece::blackKnight, Piece::blackRook
 	};
+	// TODO: initialize attacksTo and attacksFrom in constructor
+	Bitboard attacksTo [64];
+	Bitboard attacksFrom [64];
+	Bitboard occupied;
+	Bitboard occupiedByColor [2];
 
-	int halfMoveCount;
-	int reversibleMoveCount;
+	int fullMoveCounter;
+	int halfmoveClock;
 	bool whiteToMove;
 	CastlingRights castlingRights;
 	Square enPassantTarget;
 	MoveGenerator* moveGenerator;
+
 	Position();
+	Position(std::string fenString);
+
+	Bitboard attacksToKing(Square kingSquare, Color kingColor);
 
 	void print();
 	void printCombinedBitboards();
-	void printBitboard(Piece piece);
 	void printPieceList();
 };
 

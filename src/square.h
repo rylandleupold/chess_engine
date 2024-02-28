@@ -1,6 +1,9 @@
 #ifndef SQUARE_H
 #define SQUARE_H
 
+#include <iostream>
+#include <algorithm>
+#include <map>
 #include <string>
 
 enum Square {
@@ -29,5 +32,18 @@ static const std::string SQUARE_TO_STRING[64] = {
 static const std::string squareToString(Square s) {
     return s == noSquare ? "--" : SQUARE_TO_STRING[s];
 };
+
+static const Square stringToSquare(std::string s) {
+    // Transform input to upper case
+    std::transform(s.begin(), s.end(), s.begin(),
+    [](unsigned char c){ return std::toupper(c);});
+    Square square = Square::noSquare;
+    for (int i=0; i<64; i++) {
+        if (SQUARE_TO_STRING[i] == s) {
+            square = Square(i);
+        }
+    }
+    return square;
+}
 
 #endif

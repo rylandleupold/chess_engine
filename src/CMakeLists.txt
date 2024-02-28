@@ -9,6 +9,8 @@ set(ChessEngineLib_src
     castling_rights.cpp
     color.h
     direction.h
+    fen_parser.h
+    fen_parser.cpp
     mask.h
     move.h
     move.cpp

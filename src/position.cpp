@@ -1,19 +1,68 @@
 #include "position.h"
-#include <iostream>
-
 
 Position::Position() {
-	halfMoveCount = 0;
-	reversibleMoveCount = 0;
+	fullMoveCounter = 1;
+	halfmoveClock = 0;
 	whiteToMove = true;
 	enPassantTarget = Square::noSquare;
 
 	moveGenerator = new MoveGenerator();
 
-	for (Piece p=Piece::blackPawn; p != noPiece; p=Piece(p+1)) {
-		Bitboard b(p);
-		pieceBitboards[p] = b;
-	};
+	initializePieceBitboardFromPieceList();
+	initializeOccupiedFromPieceList();
+}
+
+Position::Position(std::string fenString) {
+	FenParser fenParser = FenParser(fenString);
+
+	fullMoveCounter = fenParser.getFullMoveCounter();
+	halfmoveClock = fenParser.getHalfmoveClock();
+	whiteToMove = (fenParser.getSideToMove() == Color::white);
+	enPassantTarget = fenParser.getEpTargetSquare();
+	castlingRights = fenParser.getCastlingRights();
+
+	moveGenerator = new MoveGenerator();
+
+	pieceList = fenParser.getPieceList();
+	initializePieceBitboardFromPieceList();
+	initializeOccupiedFromPieceList();
+}
+
+Bitboard Position::attacksToKing(Square kingSquare, Color kingColor) {
+	Bitboard opPawns = pieceBitboards[Piece::whitePawn - kingColor];
+	Bitboard opKnights = pieceBitboards[Piece::whiteKnight - kingColor];
+	Bitboard opRQ, opBQ = pieceBitboards[Piece::whiteQueen - kingColor];
+	opRQ |= pieceBitboards[Piece::whiteRook - kingColor];
+	opBQ |= pieceBitboards[Piece::whiteBishop - kingColor];
+	return (
+		(moveGenerator->pawnCaptures(Bitboard(kingSquare), kingColor) & opPawns)
+		| (moveGenerator->knightAttacks(kingSquare) & opKnights)
+		| (moveGenerator->bishopAttacks(kingSquare, occupied) & opBQ)
+		| (moveGenerator->rookAttacks(kingSquare, occupied) & opRQ));
+}
+
+
+void Position::initializePieceBitboardFromPieceList() {
+	for (Square s = Square::A1; s<=Square::H8; s=Square(s+1)) {
+		Piece p = pieceList[s];
+		if (p != Piece::noPiece) {
+			pieceBitboards[p].set(s);
+		}
+	}
+}
+
+void Position::initializeOccupiedFromPieceList() {
+	for (Square s=Square::A1; s<=Square::H8; s=Square(s+1)) {
+		Piece p = pieceList[s];
+		if (p != Piece::noPiece) {
+			occupied.set(s);
+			if (isWhite(p)) {
+				occupiedByColor[Color::white].set(s);
+			} else {
+				occupiedByColor[Color::black].set(s);
+			}
+		}
+	}
 }
 
 std::array<std::string, 8> Position::getCombinedBitboardsStr() {
@@ -58,6 +107,25 @@ std::array<std::string, 8> Position::getPieceListStr() {
 	}
 	std::reverse(ranks.begin(), ranks.end());
 	return ranks;
+}
+
+void Position::print() {
+	std::array<std::string, 8> bitboardRanks = getCombinedBitboardsStr();
+	std::array<std::string, 8> pieceListRanks = getPieceListStr();
+	std::cout << "____________________________________________" << std::endl;
+	std::cout << "                 POSITION                   " << std::endl;
+	std::cout << " Castling: " << castlingRights.toString();
+	std::cout << "  To Move: " << (whiteToMove ? "W" : "B");
+	std::cout << "  EP Target: " << squareToString(enPassantTarget) << std::endl;
+	std::cout << " Halfmove Clock: " << halfmoveClock << std::endl;
+	std::cout << " Full Move Counter: " << fullMoveCounter << std::endl;
+	std::cout << " __________________________________________ " << std::endl;
+	std::cout << " Combined Bitboards  |       Piece List    " << std::endl;
+	for (int i=0; i<bitboardRanks.size(); i++) {
+		std::cout << (i + 1) << "| " << bitboardRanks[i] << "  |  " << (i+1) << "| " << pieceListRanks[i] << std::endl;
+	}
+	std::cout << "  =================  |    =================" << std::endl;
+	std::cout << "   A B C D E F G H   |     A B C D E F G H " << std::endl;
 }
 
 void Position::printCombinedBitboards() {

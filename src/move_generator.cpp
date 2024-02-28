@@ -126,6 +126,12 @@ Bitboard MoveGenerator::pawnCapturesEast(Bitboard pawns, Color color) {
     return color == Color::black ? pawns.shiftSE() : pawns.shiftNE();
 }
 
+Bitboard MoveGenerator::pawnCaptures(Bitboard pawns, Color color) {
+    return color == Color::black 
+        ? (pawns.shiftSE() | pawns.shiftSW())
+        : (pawns.shiftNE() | pawns.shiftNW());
+}
+
 Bitboard MoveGenerator::pawnPushes(Bitboard pawns, Color color, Bitboard occupied) {
     Bitboard targets;
     Bitboard singlePushes;

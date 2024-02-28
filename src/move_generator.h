@@ -30,6 +30,7 @@ public:
     Bitboard slidingPieceAttacks(Square origin, Direction direction);
     Bitboard pawnCapturesWest(Bitboard pawns, Color color);
     Bitboard pawnCapturesEast(Bitboard pawns, Color color);
+    Bitboard pawnCaptures(Bitboard pawns, Color color);
     Bitboard pawnPushes(Bitboard pawns, Color color, Bitboard occupied);
 };
 

@@ -188,7 +188,7 @@ Bitboard Bitboard::shift(Direction d) {
 	}
 }
 
-void Bitboard::print() {
+void Bitboard::print(char c) {
 	std::cout << "___________________" << std::endl;
 	std::cout << "      Bitboard     " << std::endl;
 	for (int r=7; r>=0; r--) {
@@ -196,7 +196,7 @@ void Bitboard::print() {
 		for (int f=0; f<8; f++) {
 			Square square = Square(r*8 + f);
 			if (this->isSet(square)) {
-				row = row + "X ";
+				row = row + c + " ";
 			} else {
 				row = row + "- ";
 			}
@@ -205,6 +205,10 @@ void Bitboard::print() {
 	}
 	std::cout << "  =================" << std::endl;
 	std::cout << "   A B C D E F G H " << std::endl;
+}
+
+void Bitboard::print() {
+	print('X');
 }
 
 bool operator==(const Bitboard& b1, const Bitboard& b2) {
