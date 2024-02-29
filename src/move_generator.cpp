@@ -148,7 +148,8 @@ Bitboard MoveGenerator::pawnPushes(Bitboard pawns, Color color, Bitboard occupie
 }
 
 
-Bitboard MoveGenerator::attacksToKing(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Square kingSquare, Color kingColor) {
+Bitboard MoveGenerator::attacksToKing(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Color kingColor) {
+    Square kingSquare = pieceBitboards[Piece::blackKing + kingColor].lsb();
 	Bitboard opPawns = pieceBitboards[Piece::whitePawn - kingColor];
 	Bitboard opKnights = pieceBitboards[Piece::whiteKnight - kingColor];
 	Bitboard opRQ, opBQ = pieceBitboards[Piece::whiteQueen - kingColor];
@@ -159,4 +160,27 @@ Bitboard MoveGenerator::attacksToKing(const std::array<Bitboard, 12>& pieceBitbo
 		| (knightAttacks(kingSquare) & opKnights)
 		| (bishopAttacks(kingSquare, occupied) & opBQ)
 		| (rookAttacks(kingSquare, occupied) & opRQ));
+}
+
+Bitboard MoveGenerator::kingDangerSquares(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Color kingColor) {
+    occupied.unset(pieceBitboards[Piece::blackKing + kingColor].lsb());
+    Bitboard dangerSquares;
+    Square opKingSquare = pieceBitboards[Piece::whiteKing - kingColor].lsb();
+    if (opKingSquare != Square::noSquare) {
+        dangerSquares |= kingAttacks(opKingSquare);
+    }
+    dangerSquares |= pawnCaptures(pieceBitboards[Piece::whitePawn - kingColor], Color(Color::white - kingColor));
+    for (Square s : pieceBitboards[Piece::whiteKnight - kingColor].getSetSquares()) {
+        dangerSquares |= knightAttacks(s);
+    }
+    for (Square s : pieceBitboards[Piece::whiteBishop - kingColor].getSetSquares()) {
+        dangerSquares |= bishopAttacks(s, occupied);
+    }
+    for (Square s : pieceBitboards[Piece::whiteRook - kingColor].getSetSquares()) {
+        dangerSquares |= rookAttacks(s, occupied);
+    }
+    for (Square s : pieceBitboards[Piece::whiteQueen - kingColor].getSetSquares()) {
+        dangerSquares |= queenAttacks(s, occupied);
+    }
+    return dangerSquares;
 }

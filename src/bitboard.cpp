@@ -87,37 +87,43 @@ void Bitboard::set(std::vector<Square> squares) {
 	}
 }
 
-bool Bitboard::isSet(Square square) {
+void Bitboard::unset(Square square) {
+	if (square == Square::noSquare) {
+		return;
+	}
+	bits = bits & ~((uint64_t) 1ULL << square);
+}
+
+bool Bitboard::isSet(Square square) const {
 	return (square == Square::noSquare) ? false : ((uint64_t) 1ULL << square) & bits;
 }
 
-bool Bitboard::isEmpty() {
+bool Bitboard::isEmpty() const {
 	return (bits == 0ULL);
 }
 
-int Bitboard::popCount() {
+int Bitboard::popCount() const {
 	return (int) __popcnt64(bits);
 }
 
-std::vector<Square> Bitboard::getSetSquares() {
-	uint64_t temp_bits = bits;
+std::vector<Square> Bitboard::getSetSquares() const {
+	Bitboard temp_bitboard = Bitboard(bits);
 	std::vector<Square> setSquares;
 	int square;
-	while (!isEmpty()) {
-		setSquares.push_back(lsb());
-		clearLsb();
+	while (!temp_bitboard.isEmpty()) {
+		setSquares.push_back(temp_bitboard.lsb());
+		temp_bitboard.clearLsb();
 	}
-	bits = temp_bits;
 	return setSquares;
 }
 
-Square Bitboard::lsb() {
+Square Bitboard::lsb() const {
 	// Number of trailing zeros, or noSquare if bits is empty
 	int trailingZeros = _tzcnt_u64(bits);
 	return (trailingZeros == 64) ? Square::noSquare : Square(trailingZeros);
 }
 
-Square Bitboard::msb() {
+Square Bitboard::msb() const {
 	// Number of bits in bitboard - number of leading 0s, or noSquare if bits is empty
 	int leadingZeros = _lzcnt_u64(bits);
 	return (leadingZeros == -1) ? Square::noSquare : Square(63 - leadingZeros);
@@ -127,45 +133,45 @@ void Bitboard::clearLsb() {
 	bits = (bits & (bits - 1));
 }
 
-Bitboard Bitboard::shiftN() {
+Bitboard Bitboard::shiftN() const {
 	return Bitboard(bits << 8);
 }
 
-Bitboard Bitboard::shiftS() {
+Bitboard Bitboard::shiftS() const {
 	return Bitboard(bits >> 8);
 }
 
-Bitboard Bitboard::shiftE() {
+Bitboard Bitboard::shiftE() const {
 	uint64_t result = (~Mask::FILE_H & bits) << 1;
 	return Bitboard(result);
 }
 
-Bitboard Bitboard::shiftW() {
+Bitboard Bitboard::shiftW() const {
 	uint64_t result = (~Mask::FILE_A & bits) >> 1;
 	return Bitboard(result);
 }
 
-Bitboard Bitboard::shiftNE() {
+Bitboard Bitboard::shiftNE() const {
 	uint64_t result = (~Mask::FILE_H & bits) << 9;
 	return Bitboard(result);
 }
 
-Bitboard Bitboard::shiftNW() {
+Bitboard Bitboard::shiftNW() const {
 	uint64_t result = (~Mask::FILE_A & bits) << 7;
 	return Bitboard(result);
 }
 
-Bitboard Bitboard::shiftSE() {
+Bitboard Bitboard::shiftSE() const {
 	uint64_t result = (~Mask::FILE_H & bits) >> 7;
 	return Bitboard(result);
 }
 
-Bitboard Bitboard::shiftSW() {
+Bitboard Bitboard::shiftSW() const {
 	uint64_t result = (~Mask::FILE_A & bits) >> 9;
 	return Bitboard(result);
 }
 
-Bitboard Bitboard::shift(Direction d) {
+Bitboard Bitboard::shift(Direction d) const {
 	switch (d) {
 		case Direction::NorthWest:
 			return shiftNW();
@@ -188,7 +194,7 @@ Bitboard Bitboard::shift(Direction d) {
 	}
 }
 
-void Bitboard::print(char c) {
+void Bitboard::print(char c) const {
 	std::cout << "___________________" << std::endl;
 	std::cout << "      Bitboard     " << std::endl;
 	for (int r=7; r>=0; r--) {
@@ -207,7 +213,7 @@ void Bitboard::print(char c) {
 	std::cout << "   A B C D E F G H " << std::endl;
 }
 
-void Bitboard::print() {
+void Bitboard::print() const {
 	print('X');
 }
 

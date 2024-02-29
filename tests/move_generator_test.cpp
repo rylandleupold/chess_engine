@@ -402,45 +402,83 @@ TEST(move_generator_test, move_generator_atacksToKing_test) {
     Position wAttacked1 = Position("8/3r4/8/8/1np1p3/3K4/4b3/1q2n3 w - - 0 1");
     Bitboard wExpected1;
     wExpected1.set(std::vector<Square> {D7, B4, C4, E4, E2, E1, B1});
-    ASSERT_EQ(wAttacked1.moveGenerator->attacksToKing(wAttacked1.pieceBitboards, wAttacked1.occupied, Square::D3, Color::white), wExpected1);
+    ASSERT_EQ(wAttacked1.moveGenerator->attacksToKing(wAttacked1.pieceBitboards, wAttacked1.occupied, Color::white), wExpected1);
 
     // W attacked by B pieces, some blocked by other B pieces
     Position wAttacked2 = Position("3q4/3r4/q7/4n3/1nr1p3/r1pK4/8/1b6 w - - 0 1");
     Bitboard wExpected2;
     wExpected2.set(std::vector<Square> {D7, E5, E4, B4, B1});
-    ASSERT_EQ(wAttacked2.moveGenerator->attacksToKing(wAttacked2.pieceBitboards, wAttacked2.occupied, Square::D3, Color::white), wExpected2);
+    ASSERT_EQ(wAttacked2.moveGenerator->attacksToKing(wAttacked2.pieceBitboards, wAttacked2.occupied, Color::white), wExpected2);
 
     // W attacked by no B pieces, but with no squares to move to
     Position wAttacked3 = Position("5q2/5r2/4n3/3b4/8/r2pK1kq/r4p2/2nq4 w - - 0 1");
     Bitboard wExpected3;
-    ASSERT_EQ(wAttacked3.moveGenerator->attacksToKing(wAttacked3.pieceBitboards, wAttacked3.occupied, Square::E3, Color::white), wExpected3);
+    ASSERT_EQ(wAttacked3.moveGenerator->attacksToKing(wAttacked3.pieceBitboards, wAttacked3.occupied, Color::white), wExpected3);
 
     // W attacked by B pieces, but all except knights are blocked by W pieces
     Position wAttacked4 = Position("7b/q5k1/1P1r4/1n1Q4/3K1N1r/2P1B3/1N6/q5b1 w - - 0 1");
     Bitboard wExpected4;
     wExpected4.set(std::vector<Square> {B5});
-    ASSERT_EQ(wAttacked4.moveGenerator->attacksToKing(wAttacked4.pieceBitboards, wAttacked4.occupied, Square::D4, Color::white), wExpected4);
+    ASSERT_EQ(wAttacked4.moveGenerator->attacksToKing(wAttacked4.pieceBitboards, wAttacked4.occupied, Color::white), wExpected4);
 
     // B attacked by all W pieces
     Position bAttacked1 = Position("3Q4/6BN/R4k2/4P1P1/4N3/5R2/8/8 b - - 0 1");
     Bitboard bExpected1;
     bExpected1.set(std::vector<Square> {A6, D8,E4, E5, F3, G5, G7, H7});
-    ASSERT_EQ(bAttacked1.moveGenerator->attacksToKing(bAttacked1.pieceBitboards, bAttacked1.occupied, Square::F6, Color::black), bExpected1);
+    ASSERT_EQ(bAttacked1.moveGenerator->attacksToKing(bAttacked1.pieceBitboards, bAttacked1.occupied, Color::black), bExpected1);
 
     // B attacked by W pieces, some blocked by other W pieces
     Position bAttacked2 = Position("3B3Q/3N2K1/3P4/R2Nk3/3P4/6B1/4R3/4Q3 b - - 0 1");
     Bitboard bExpected2;
     bExpected2.set(std::vector<Square> {E2, D4, G3, D7});
-    ASSERT_EQ(bAttacked2.moveGenerator->attacksToKing(bAttacked2.pieceBitboards, bAttacked2.occupied, Square::E5, Color::black), bExpected2);
+    ASSERT_EQ(bAttacked2.moveGenerator->attacksToKing(bAttacked2.pieceBitboards, bAttacked2.occupied, Color::black), bExpected2);
 
     // B attacked by no W pieces, but with no squares to move to
     Position bAttacked3 = Position("5RQ1/1Pk5/8/NBP3P1/4N3/8/8/R7 b - - 0 1");
     Bitboard bExpected3;
-    ASSERT_EQ(bAttacked3.moveGenerator->attacksToKing(bAttacked3.pieceBitboards, bAttacked3.occupied, Square::C7, Color::black), bExpected3);
+    ASSERT_EQ(bAttacked3.moveGenerator->attacksToKing(bAttacked3.pieceBitboards, bAttacked3.occupied, Color::black), bExpected3);
 
     // B attacked by W pieces, but all except knights are blocked by B pieces
     Position bAttacked4 = Position("8/3N2B1/4rq2/QR1bkp1Q/3p4/8/1B2K3/4Q3 w - - 0 1");
     Bitboard bExpected4;
     bExpected4.set(std::vector<Square> {D7});
-    ASSERT_EQ(bAttacked4.moveGenerator->attacksToKing(bAttacked4.pieceBitboards, bAttacked4.occupied, Square::E5, Color::black), bExpected4);
+    ASSERT_EQ(bAttacked4.moveGenerator->attacksToKing(bAttacked4.pieceBitboards, bAttacked4.occupied, Color::black), bExpected4);
+}
+
+TEST(move_generator_test, move_generator_kingDangerSquares_test) {
+    // All black pieces, check x-ray on white king
+    Position p1("8/4K3/1NN5/1Nq2p2/1NkN3b/6N1/3NrN2/4N3 w - - 0 1");
+    Bitboard expected1;
+    Bitboard p1Occupied = p1.occupied;
+    expected1.set(std::vector<Square> {B6, B5, B4, C4, C6, D4, D5, D6, E7, F8, E5, F5, B3, C5, C3, D3, D2, E1, F2, E3, E4, E5, E6, E7, E8, G4, G3, G5, F6, D8});
+    ASSERT_EQ(p1.moveGenerator->kingDangerSquares(p1.pieceBitboards, p1.occupied, Color::white), expected1);
+    ASSERT_EQ(p1Occupied, p1.occupied);
+
+    // All black pieces, check blocking by white pieces
+    Position p2("8/8/8/8/1ppr4/1b1Qn3/2K5/8 w - - 0 1");
+    Bitboard expected2;
+    expected2.set(std::vector<Square> {A4, A2, C2, D1, C4, A3, C3, B3, D3, D5, D6, D7, D8, F1, G2, G4, F5, E4, F4, G4, H4});
+    ASSERT_EQ(p2.moveGenerator->kingDangerSquares(p2.pieceBitboards, p2.occupied, Color::white), expected2);
+
+    // Completely empty board except white king
+    Position p3("8/8/8/8/8/8/8/K7 w - - 0 1");
+    Bitboard expected3;
+    ASSERT_EQ(p3.moveGenerator->kingDangerSquares(p3.pieceBitboards, p3.occupied, Color::white), expected3);
+
+    // All white pieces, check x-ray on black king
+    Position p4("Q1N5/P7/2k5/8/B1R1n3/1P6/8/8 w - - 0 1");
+    Bitboard expected4;
+    expected4.set(std::vector<Square> {A7, B7, C6, D5, E4, B8, C8, B3, B5, C6, D7, E8, A4, C4, B4, D4, E4, C3, C2, C1, C5, C6, C7, C8, B6, D6, E7});
+    ASSERT_EQ(p4.moveGenerator->kingDangerSquares(p4.pieceBitboards, p4.occupied, Color::black), expected4);
+
+    // All white pieces, check blocking black pieces
+    Position p5("8/3b4/1Rp1kr1Q/1P4p1/2n3NP/8/B7/7K w - - 0 1");
+    Bitboard expected5;
+    expected5.set(std::vector<Square> {B1, B3, C4, A6, C6, B5, B7, B8, G1, G2, H2, F2, E3, E5, F6, H6, G5, H5, H4, G5, G6, G7, F8, H7, H8});
+    ASSERT_EQ(p5.moveGenerator->kingDangerSquares(p5.pieceBitboards, p5.occupied, Color::black), expected5);
+
+    // Completely empty board except black king
+    Position p6("8/8/8/1k6/8/8/8/8 b - - 0 1");
+    Bitboard expected6;
+    ASSERT_EQ(p6.moveGenerator->kingDangerSquares(p6.pieceBitboards, p6.occupied, Color::black), expected6);
 }

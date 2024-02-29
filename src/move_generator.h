@@ -10,8 +10,8 @@
 
 class MoveGenerator {
 private:
-    Bitboard KNIGHT_MOVES[64];
-    Bitboard KING_MOVES[64];
+    std::array<Bitboard, 64> KNIGHT_MOVES;
+    std::array<Bitboard, 64> KING_MOVES;
     std::array<std::array<Bitboard, 64>, 8> SLIDING_PIECE_MOVES;
 
     void populateKnightMovesArray();
@@ -32,7 +32,9 @@ public:
     Bitboard pawnCapturesEast(Bitboard pawns, Color color);
     Bitboard pawnCaptures(Bitboard pawns, Color color);
     Bitboard pawnPushes(Bitboard pawns, Color color, Bitboard occupied);
-    Bitboard attacksToKing(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Square kingSquare, Color kingColor);
+    
+    Bitboard attacksToKing(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Color kingColor);
+    Bitboard kingDangerSquares(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Color kingColor);
 };
 
 #endif

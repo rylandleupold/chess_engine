@@ -66,6 +66,34 @@ TEST(bitboard_test, bitboard_setVector_test) {
     ASSERT_EQ(bitboard, expected);
 }
 
+TEST(bitboard_test, bitboard_unset_test) {
+    Bitboard b(Square::A1);
+    b.unset(Square::A1);
+    ASSERT_EQ(b, Bitboard());
+
+    Bitboard b2(Square::H8);
+    b2.unset(Square::H8);
+    ASSERT_EQ(b2, Bitboard());
+
+    Bitboard b3;
+    b3.set(std::vector<Square> {A2, C3, D5, E7, E8, F6});
+    b3.unset(Square::F6);
+    b3.unset(Square::C3);
+    b3.unset(Square::E7);
+    b3.unset(Square::F6);
+
+    ASSERT_TRUE(b3.isSet(Square::A2));
+    ASSERT_TRUE(b3.isSet(Square::D5));
+    ASSERT_TRUE(b3.isSet(Square::E8));
+    ASSERT_FALSE(b3.isSet(Square::C3));
+    ASSERT_FALSE(b3.isSet(Square::E7));
+    ASSERT_FALSE(b3.isSet(Square::F6));
+
+    Bitboard b4(Square::H8);
+    b4.unset(Square::noSquare);
+    ASSERT_EQ(b4, Bitboard(Square::H8));
+}
+
 TEST(bitboard_test, bitboard_isEmpty_test) {
     Bitboard b1;
     ASSERT_TRUE(b1.isEmpty());

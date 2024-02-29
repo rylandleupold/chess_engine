@@ -15,9 +15,6 @@
 
 class Bitboard {
 public:
-	static const uint64_t RANK_8 = 0;
-
-
 	uint64_t bits;
 
 	Bitboard();
@@ -25,32 +22,33 @@ public:
 	Bitboard(Square square);
 	Bitboard(Piece piece);
 
-	void set(Square Square);
+	void set(Square square);
 	void set(std::vector<Square>);
+	void unset(Square square);
 
-	bool isSet(Square square);
-	bool isEmpty();
+	bool isSet(Square square) const;
+	bool isEmpty() const;
 
-	int popCount();
-	std::vector<Square> getSetSquares();
+	int popCount() const;
+	std::vector<Square> getSetSquares() const;
 
-	Square lsb();
-	Square msb();
+	Square lsb() const;
+	Square msb() const;
 
 	void clearLsb();
 
-	Bitboard shiftNW();
-	Bitboard shiftN();
-	Bitboard shiftNE();
-	Bitboard shiftE();
-	Bitboard shiftSE();
-	Bitboard shiftS();
-	Bitboard shiftSW();
-	Bitboard shiftW();
-	Bitboard shift(Direction d);
+	Bitboard shiftNW() const;
+	Bitboard shiftN() const;
+	Bitboard shiftNE() const;
+	Bitboard shiftE() const;
+	Bitboard shiftSE() const;
+	Bitboard shiftS() const;
+	Bitboard shiftSW() const;
+	Bitboard shiftW() const;
+	Bitboard shift(Direction d) const;
 
-	void print();
-	void print(char c);
+	void print() const;
+	void print(char c) const;
 	friend bool operator==(const Bitboard& b1, const Bitboard& b2);
 	friend bool operator!=(const Bitboard& b1, const Bitboard& b2);
 	void operator=(const Bitboard& b);
