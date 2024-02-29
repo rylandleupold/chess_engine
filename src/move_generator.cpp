@@ -146,3 +146,17 @@ Bitboard MoveGenerator::pawnPushes(Bitboard pawns, Color color, Bitboard occupie
     }
     return targets;
 }
+
+
+Bitboard MoveGenerator::attacksToKing(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Square kingSquare, Color kingColor) {
+	Bitboard opPawns = pieceBitboards[Piece::whitePawn - kingColor];
+	Bitboard opKnights = pieceBitboards[Piece::whiteKnight - kingColor];
+	Bitboard opRQ, opBQ = pieceBitboards[Piece::whiteQueen - kingColor];
+	opRQ |= pieceBitboards[Piece::whiteRook - kingColor];
+	opBQ |= pieceBitboards[Piece::whiteBishop - kingColor];
+	return (
+		(pawnCaptures(Bitboard(kingSquare), kingColor) & opPawns)
+		| (knightAttacks(kingSquare) & opKnights)
+		| (bishopAttacks(kingSquare, occupied) & opBQ)
+		| (rookAttacks(kingSquare, occupied) & opRQ));
+}

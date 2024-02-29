@@ -32,6 +32,7 @@ public:
     Bitboard pawnCapturesEast(Bitboard pawns, Color color);
     Bitboard pawnCaptures(Bitboard pawns, Color color);
     Bitboard pawnPushes(Bitboard pawns, Color color, Bitboard occupied);
+    Bitboard attacksToKing(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Square kingSquare, Color kingColor);
 };
 
 #endif

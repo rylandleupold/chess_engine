@@ -28,20 +28,6 @@ Position::Position(std::string fenString) {
 	initializeOccupiedFromPieceList();
 }
 
-Bitboard Position::attacksToKing(Square kingSquare, Color kingColor) {
-	Bitboard opPawns = pieceBitboards[Piece::whitePawn - kingColor];
-	Bitboard opKnights = pieceBitboards[Piece::whiteKnight - kingColor];
-	Bitboard opRQ, opBQ = pieceBitboards[Piece::whiteQueen - kingColor];
-	opRQ |= pieceBitboards[Piece::whiteRook - kingColor];
-	opBQ |= pieceBitboards[Piece::whiteBishop - kingColor];
-	return (
-		(moveGenerator->pawnCaptures(Bitboard(kingSquare), kingColor) & opPawns)
-		| (moveGenerator->knightAttacks(kingSquare) & opKnights)
-		| (moveGenerator->bishopAttacks(kingSquare, occupied) & opBQ)
-		| (moveGenerator->rookAttacks(kingSquare, occupied) & opRQ));
-}
-
-
 void Position::initializePieceBitboardFromPieceList() {
 	for (Square s = Square::A1; s<=Square::H8; s=Square(s+1)) {
 		Piece p = pieceList[s];

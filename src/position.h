@@ -22,7 +22,7 @@ private:
 	void initializePieceBitboardFromPieceList();
 
 public:
-	Bitboard pieceBitboards [12];
+	std::array<Bitboard, 12> pieceBitboards;
 	std::array<Piece, 64> pieceList ={
 		Piece::whiteRook, Piece::whiteKnight, Piece::whiteBishop, Piece::whiteQueen, Piece::whiteKing, Piece::whiteBishop, Piece::whiteKnight, Piece::whiteRook,
 		Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn, Piece::whitePawn,
@@ -48,8 +48,6 @@ public:
 
 	Position();
 	Position(std::string fenString);
-
-	Bitboard attacksToKing(Square kingSquare, Color kingColor);
 
 	void print();
 	void printCombinedBitboards();
