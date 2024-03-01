@@ -41,7 +41,7 @@ public:
 
 	int fullMoveCounter;
 	int halfmoveClock;
-	bool whiteToMove;
+	Color colorToMove;
 	CastlingRights castlingRights;
 	Square enPassantTarget;
 	MoveGenerator* moveGenerator;

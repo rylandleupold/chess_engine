@@ -8,7 +8,7 @@ TEST(position_test, position_constructor_test) {
     ASSERT_EQ(p1.castlingRights, p2.castlingRights);
     ASSERT_EQ(p1.fullMoveCounter, p2.fullMoveCounter);
     ASSERT_EQ(p1.halfmoveClock, p2.halfmoveClock);
-    ASSERT_EQ(p1.whiteToMove, p2.whiteToMove);
+    ASSERT_EQ(p1.colorToMove, p2.colorToMove);
     ASSERT_EQ(p1.enPassantTarget, p2.enPassantTarget);
     ASSERT_EQ(p1.pieceList, p2.pieceList);
     ASSERT_EQ(p1.occupied, p2.occupied);

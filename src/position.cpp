@@ -3,7 +3,7 @@
 Position::Position() {
 	fullMoveCounter = 1;
 	halfmoveClock = 0;
-	whiteToMove = true;
+	colorToMove = Color::white;
 	enPassantTarget = Square::noSquare;
 
 	moveGenerator = new MoveGenerator();
@@ -17,7 +17,7 @@ Position::Position(std::string fenString) {
 
 	fullMoveCounter = fenParser.getFullMoveCounter();
 	halfmoveClock = fenParser.getHalfmoveClock();
-	whiteToMove = (fenParser.getSideToMove() == Color::white);
+	colorToMove = fenParser.getSideToMove();
 	enPassantTarget = fenParser.getEpTargetSquare();
 	castlingRights = fenParser.getCastlingRights();
 
@@ -101,7 +101,7 @@ void Position::print() {
 	std::cout << "____________________________________________" << std::endl;
 	std::cout << "                 POSITION                   " << std::endl;
 	std::cout << " Castling: " << castlingRights.toString();
-	std::cout << "  To Move: " << (whiteToMove ? "W" : "B");
+	std::cout << "  To Move: " << (colorToMove == Color::white ? "W" : "B");
 	std::cout << "  EP Target: " << squareToString(enPassantTarget) << std::endl;
 	std::cout << " Halfmove Clock: " << halfmoveClock << std::endl;
 	std::cout << " Full Move Counter: " << fullMoveCounter << std::endl;
