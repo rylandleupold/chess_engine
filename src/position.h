@@ -8,9 +8,12 @@
 #include "bitboard.h"
 #include "castling_rights.h"
 #include "fen_parser.h"
-#include "move_generator.h"
 #include "piece.h"
 #include "square.h"
+
+// Forward declare MoveGenerator class and include header in position.cpp 
+// to avoid circular dependency
+class MoveGenerator;
 
 class Position {
 private:

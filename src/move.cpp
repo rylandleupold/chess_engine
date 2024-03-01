@@ -8,10 +8,6 @@ Move::Move(uint16_t bits) {
     moveBits = bits;
 }
 
-void Move::operator=(Move m) {
-    moveBits = m.moveBits;
-}
-
 Square Move::getTarget() const {
     return Square(moveBits & 0x3f);
 }
@@ -45,4 +41,16 @@ bool Move::isCapture() {
 
 bool Move::isPromotion() {
     return (moveBits & PROMOTION_MASK) != 0;
+}
+
+void Move::operator=(Move m) {
+    moveBits = m.moveBits;
+}
+
+bool operator==(const Move& m1, const Move& m2) {
+    return (m1.moveBits == m2.moveBits);
+}
+
+bool operator!=(const Move& m1, const Move& m2) {
+    return !(m1 == m2);
 }

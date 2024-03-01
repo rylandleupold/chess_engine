@@ -6,6 +6,8 @@
 #include "bitboard.h"
 #include "color.h"
 #include "direction.h"
+#include "move.h"
+#include "position.h"
 #include "square.h"
 
 class MoveGenerator {
@@ -33,6 +35,8 @@ public:
     Bitboard pawnCaptures(Bitboard pawns, Color color);
     Bitboard pawnPushes(Bitboard pawns, Color color, Bitboard occupied);
     
+    void populateMoveList(std::vector<Move>& moveList, Position& p);
+    void populateKingMoves(std::vector<Move>& moveList, Bitboard kingBitboard, Bitboard dangerSquares, Bitboard occupied, Bitboard opPieces);
     Bitboard attacksToKing(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Color kingColor);
     Bitboard kingDangerSquares(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Color kingColor);
 };

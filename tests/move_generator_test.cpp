@@ -482,3 +482,63 @@ TEST(move_generator_test, move_generator_kingDangerSquares_test) {
     Bitboard expected6;
     ASSERT_EQ(p6.moveGenerator->kingDangerSquares(p6.pieceBitboards, p6.occupied, Color::black), expected6);
 }
+
+TEST(move_generator_test, move_generator_populateMoveList_double_check_test) {
+    // White king checked 3 times, no other white pieces
+    Position p1 = Position("3r4/8/8/b7/4n3/8/3K4/8 w - - 0 1");
+    std::vector<Move> expected1 {
+        Move(D2, C1, Move::MoveType::quiet),
+        Move(D2, C2, Move::MoveType::quiet),
+        Move(D2, E2, Move::MoveType::quiet),
+        Move(D2, E3, Move::MoveType::quiet)};
+    std::vector<Move> actual1 {};
+    p1.moveGenerator->populateMoveList(actual1, p1);
+    ASSERT_EQ(expected1, actual1);
+
+    // Test white blocking some black attacks to king
+    Position p2 = Position("k4r2/8/1b3P1q/2Qn4/8/3pK3/r2R4/8 w - - 0 1");
+    std::vector<Move> expected2 {
+        Move(E3, D3, Move::MoveType::capture),
+        Move(E3, F2, Move::MoveType::quiet),
+        Move(E3, F3, Move::MoveType::quiet),
+        Move(E3, D4, Move::MoveType::quiet),
+        Move(E3, E4, Move::MoveType::quiet)};
+    std::vector<Move> actual2 {};
+    p2.moveGenerator->populateMoveList(actual2, p2);
+    ASSERT_EQ(expected2, actual2);
+
+    // White king is in checkmate
+    Position p3 = Position("8/8/8/rq2b3/8/8/2Pp4/1Kn5 w - - 0 1");
+    std::vector<Move> expected3{};
+    std::vector<Move> actual3{};
+    p3.moveGenerator->populateMoveList(actual3, p3);
+    ASSERT_EQ(expected3, actual3);
+
+    // Black king checked 3 times, no other black pieces
+    Position p4 = Position("3B4/1Q2k3/8/8/4R3/8/8/8 b - - 0 1");
+    std::vector<Move> expected4 {
+        Move(E7, D8, Move::MoveType::capture),
+        Move(E7, D6, Move::MoveType::quiet),
+        Move(E7, F8, Move::MoveType::quiet)};
+    std::vector<Move> actual4 {};
+    p4.moveGenerator->populateMoveList(actual4, p4);
+    ASSERT_EQ(expected4, actual4);
+
+    // Black can capture some, but not others, white blocked by some black pieces
+    Position p5 = Position("2R1B3/1P6/Rpkp2R1/1P6/4n3/3N1Q2/8/8 b - - 0 1");
+    std::vector<Move> expected5 {
+        Move(C6, B7, Move::MoveType::capture),
+        Move(C6, D5, Move::MoveType::quiet)};
+    std::vector<Move> actual5 {};
+    p5.moveGenerator->populateMoveList(actual5, p5);
+    ASSERT_EQ(expected5, actual5);
+
+    // Black king, one white piece defended by x-ray, another is not
+    Position p6 = Position("8/8/3N1N2/4k3/3P4/2B2r2/7Q/5R2 b - - 0 1");
+    std::vector<Move> expected6 {
+        Move(E5, F6, Move::MoveType::capture),
+        Move(E5, E6, Move::MoveType::quiet)};
+    std::vector<Move> actual6 {};
+    p6.moveGenerator->populateMoveList(actual6, p6);
+    ASSERT_EQ(expected6, actual6);
+}

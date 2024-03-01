@@ -1,4 +1,5 @@
 #include "position.h"
+#include "move_generator.h"
 
 Position::Position() {
 	fullMoveCounter = 1;

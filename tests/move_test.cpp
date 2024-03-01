@@ -95,3 +95,26 @@ TEST(move_test, move_isPromotion_test) {
     move.setMoveType(Move::MoveType::capture);
     ASSERT_FALSE(move.isPromotion());
 }
+
+TEST(move_test, move_operatorEquality_test) {
+    Move m1(Square::A1, Square::A2, Move::MoveType::quiet);
+    Move m2(Square::A1, Square::A2, Move::MoveType::quiet);
+
+    ASSERT_TRUE(m1 == m2);
+    ASSERT_EQ(m1, m2);
+
+    Move m3 = m1;
+    m3.setOrigin(Square::A8);
+
+    ASSERT_TRUE(m1 != m3);
+    ASSERT_NE(m1, m3);
+
+    Move m4 = m1;
+    m4.setTarget(Square::H8);
+    ASSERT_NE(m1, m4);
+
+    Move m5 = m1;
+    ASSERT_EQ(m1, m5);
+    m5.setMoveType(Move::MoveType::capture);
+    ASSERT_NE(m1, m5);
+}

@@ -184,3 +184,51 @@ Bitboard MoveGenerator::kingDangerSquares(const std::array<Bitboard, 12>& pieceB
     }
     return dangerSquares;
 }
+
+void MoveGenerator::populateMoveList(std::vector<Move>& moveList, Position& p) {
+    // Remove old moves
+    moveList.clear();
+
+    Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+
+    // Calculate the squares attacked by opposing pieces after removing king from the board
+    Bitboard dangerSquares = kingDangerSquares(p.pieceBitboards, p.occupied, p.colorToMove);
+    Bitboard opPieces = p.occupiedByColor[Color::white - p.colorToMove];
+    // Populate normal king moves (not castling)
+    populateKingMoves(moveList, p.pieceBitboards[Piece::blackKing+p.colorToMove], dangerSquares, p.occupied, opPieces);
+
+    Bitboard checkers = attacksToKing(p.pieceBitboards, p.occupied, p.colorToMove);
+    int numCheckers = checkers.popCount();
+    if (numCheckers > 1) {
+        // Double check. Only king moves are legal
+        return;
+    }
+
+    if (numCheckers == 1) {
+        // Single check. Only king moves and capturing or blocking the checking piece are legal
+        captureMask = checkers;
+    }
+
+    // Not in check, generate all moves
+
+}
+
+void MoveGenerator::populateKingMoves(std::vector<Move>& moveList, Bitboard kingBitboard, Bitboard dangerSquares, Bitboard occupied, Bitboard opPieces) {
+    Square kingSquare = kingBitboard.lsb();
+    Bitboard attacks = (kingAttacks(kingSquare) & ~dangerSquares);
+    Bitboard captures = attacks & opPieces;
+    Bitboard pushes = (attacks & ~occupied);
+    Square target;
+    while (!captures.isEmpty()) {
+        target = captures.lsb();
+        moveList.push_back(Move(kingSquare, target, Move::MoveType::capture));
+        captures.clearLsb();
+    }
+    while (!pushes.isEmpty()) {
+        target = pushes.lsb();
+        moveList.push_back(Move(kingSquare, target, Move::MoveType::quiet));
+        pushes.clearLsb();
+    }
+}
+

@@ -29,10 +29,12 @@ public:
     void setOrigin(Square s);
     void setMoveType(Move::MoveType moveType);
 
-    void operator=(Move m);
-
     bool isCapture();
     bool isPromotion();
+
+    void operator=(Move m);
+    friend bool operator==(const Move& m1, const Move& m2);
+    friend bool operator!=(const Move& m1, const Move& m2);
 };
 
 #endif
