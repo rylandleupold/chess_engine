@@ -368,12 +368,12 @@ TEST(move_generator_test, move_generator_pawnPushes_test) {
 
     blackPawns.set(std::vector<Square> {A7, B6, C4, D7, D5, F2, H3});
     Bitboard expectedBlack;
-    expectedBlack.set(std::vector<Square> {A6, A5, B5, C3, D6, D5, D4, F1, H2});
+    expectedBlack.set(std::vector<Square> {A6, B5, C3, D6, D4, F1, H2});
     ASSERT_EQ(m.pawnPushes(blackPawns, Color::black, occupied), expectedBlack);
 
     whitePawns.set(std::vector<Square> {A2, B4, B7, D3, E2, F7, G5, H2});
     Bitboard expectedWhite;
-    expectedWhite.set(std::vector<Square> {A3, A4, B5, B8, D4, E3, E4, F8, G6, H3, H4});
+    expectedWhite.set(std::vector<Square> {A3, B5, B8, D4, E3, F8, G6, H3});
     ASSERT_EQ(m.pawnPushes(whitePawns, Color::white, occupied), expectedWhite);
 }
 
@@ -393,8 +393,47 @@ TEST(move_generator_test, move_generator_pawnPushes_blocked_test) {
     whitePawns.set(std::vector<Square> {A2, B4, B7, D3, E2, F7, G5, H2});
     occupiedWhite.set(std::vector<Square> {A3, B5, C4, E4, C3, F8, H5});
     Bitboard expectedWhite;
-    expectedWhite.set(std::vector<Square> {B8, D4, E3, G6, H3, H4});
+    expectedWhite.set(std::vector<Square> {B8, D4, E3, G6, H3});
     ASSERT_EQ(m.pawnPushes(whitePawns, Color::white, occupiedWhite), expectedWhite);
+}
+
+TEST(move_generator_test, move_generator_pawnDoublePushes_test) {
+    MoveGenerator m;
+    Bitboard blackPawns;
+    Bitboard whitePawns;
+    Bitboard occupied;
+    ASSERT_EQ(m.pawnPushes(blackPawns, Color::black, occupied), Bitboard(0ULL));
+    ASSERT_EQ(m.pawnPushes(whitePawns, Color::white, occupied), Bitboard(0ULL));
+
+    blackPawns.set(std::vector<Square> {A7, B6, C7, D7, F2, H3});
+    Bitboard expectedBlack;
+    expectedBlack.set(std::vector<Square> {A5, C5, D5});
+    ASSERT_EQ(m.pawnDoublePushes(blackPawns, Color::black, occupied), expectedBlack);
+
+    whitePawns.set(std::vector<Square> {A2, B2, D3, E2, F7, G5, H2});
+    Bitboard expectedWhite;
+    expectedWhite.set(std::vector<Square> {A4, B4, E4, H4});
+    ASSERT_EQ(m.pawnDoublePushes(whitePawns, Color::white, occupied), expectedWhite);
+}
+
+TEST(move_generator_test, move_generator_pawnDoublePushes_blocked_test) {
+    MoveGenerator m;
+    Bitboard blackPawns;
+    Bitboard whitePawns;
+    Bitboard occupiedBlack;
+    Bitboard occupiedWhite;
+
+    blackPawns.set(std::vector<Square> {A7, B6, C7, D7, F7, H7});
+    occupiedBlack.set(std::vector<Square> {A5, B5, C6, D4, F8, H6, H5});
+    Bitboard expectedBlack;
+    expectedBlack.set(std::vector<Square> {D5, F5});
+    ASSERT_EQ(m.pawnDoublePushes(blackPawns, Color::black, occupiedBlack), expectedBlack);
+
+    whitePawns.set(std::vector<Square> {A2, B2, D3, E2, F7, G2, H2});
+    occupiedWhite.set(std::vector<Square> {A3, A4, B5, C4, E4, C3, G3, H7});
+    Bitboard expectedWhite;
+    expectedWhite.set(std::vector<Square> {B4, H4});
+    ASSERT_EQ(m.pawnDoublePushes(whitePawns, Color::white, occupiedWhite), expectedWhite);
 }
 
 TEST(move_generator_test, move_generator_atacksToKing_test) {
@@ -541,4 +580,233 @@ TEST(move_generator_test, move_generator_populateMoveList_double_check_test) {
     std::vector<Move> actual6 {};
     p6.moveGenerator->populateMoveList(actual6, p6);
     ASSERT_EQ(expected6, actual6);
+}
+
+TEST(move_generator_test, move_generator_populatePawnMoves_test) {
+    Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+
+    // Test white pushes, double pushes, and promotion
+    Position p = Position("1k6/4P3/2Pq4/3Pp2P/3p2b1/nP4n1/P2PP1P1/3K4 w - - 0 1");
+    std::vector<Move> expected = {
+        Move(E2, E4, Move::MoveType::doublePawnPush),
+        Move(D2, D3, Move::MoveType::quiet),
+        Move(E2, E3, Move::MoveType::quiet),
+        Move(B3, B4, Move::MoveType::quiet),
+        Move(H5, H6, Move::MoveType::quiet),
+        Move(C6, C7, Move::MoveType::quiet),
+        Move(E7, E8, Move::MoveType::queenPromo),
+        Move(E7, E8, Move::MoveType::rookPromo),
+        Move(E7, E8, Move::MoveType::bishopPromo),
+        Move(E7, E8, Move::MoveType::knightPromo),
+    };
+
+    std::vector<Move> actual;
+    p.moveGenerator->populatePawnMoves(
+        actual, 
+        p.pieceBitboards[Piece::whitePawn], 
+        p.occupied, 
+        p.occupiedByColor[Color::black], 
+        p.colorToMove, 
+        pushMask, 
+        captureMask);
+    
+    ASSERT_EQ(expected, actual);
+
+    // Test white captures and promoCaptures east and west
+    p = Position("k2bnrbq/3P1P1P/4rn2/1qRnP3/2P1P3/1p6/1P6/7K w - - 0 1");
+    expected.clear();
+    expected = {
+        Move(C4, D5, Move::MoveType::capture),
+        Move(E5, F6, Move::MoveType::capture),
+        Move(C4, B5, Move::MoveType::capture),
+        Move(E4, D5, Move::MoveType::capture),
+
+        Move(D7, E8, Move::MoveType::queenPromoCapture),
+        Move(D7, E8, Move::MoveType::rookPromoCapture),
+        Move(D7, E8, Move::MoveType::bishopPromoCapture),
+        Move(D7, E8, Move::MoveType::knightPromoCapture),
+
+        Move(F7, G8, Move::MoveType::queenPromoCapture),
+        Move(F7, G8, Move::MoveType::rookPromoCapture),
+        Move(F7, G8, Move::MoveType::bishopPromoCapture),
+        Move(F7, G8, Move::MoveType::knightPromoCapture),
+
+        Move(F7, E8, Move::MoveType::queenPromoCapture),
+        Move(F7, E8, Move::MoveType::rookPromoCapture),
+        Move(F7, E8, Move::MoveType::bishopPromoCapture),
+        Move(F7, E8, Move::MoveType::knightPromoCapture),
+
+        Move(H7, G8, Move::MoveType::queenPromoCapture),
+        Move(H7, G8, Move::MoveType::rookPromoCapture),
+        Move(H7, G8, Move::MoveType::bishopPromoCapture),
+        Move(H7, G8, Move::MoveType::knightPromoCapture),       
+    };
+
+    actual.clear();
+    p.moveGenerator->populatePawnMoves(
+        actual, 
+        p.pieceBitboards[Piece::whitePawn], 
+        p.occupied, 
+        p.occupiedByColor[Color::black], 
+        p.colorToMove, 
+        pushMask, 
+        captureMask);
+    ASSERT_EQ(expected, actual);
+
+    // Test black pushes, double pushes, and promotions
+    p = Position("7k/1p1pp1p1/1P4P1/1N2P3/p1pB1p2/5R2/K6p/8 b - - 0 1");
+    expected.clear();
+    expected = {
+        
+        Move(D7, D5, Move::MoveType::doublePawnPush),
+        Move(A4, A3, Move::MoveType::quiet),
+        Move(C4, C3, Move::MoveType::quiet),
+        Move(D7, D6, Move::MoveType::quiet),
+        Move(E7, E6, Move::MoveType::quiet),
+        Move(H2, H1, Move::MoveType::queenPromo),
+        Move(H2, H1, Move::MoveType::rookPromo),
+        Move(H2, H1, Move::MoveType::bishopPromo),
+        Move(H2, H1, Move::MoveType::knightPromo),
+    };
+
+    actual.clear();
+    p.moveGenerator->populatePawnMoves(
+        actual, 
+        p.pieceBitboards[Piece::blackPawn], 
+        p.occupied, 
+        p.occupiedByColor[Color::white], 
+        p.colorToMove, 
+        pushMask, 
+        captureMask);
+    ASSERT_EQ(expected, actual);
+
+    // Test black captures and promoCaptures east and west
+    p = Position("5k2/3p4/2QbPp2/2p1Nnq1/1nRB4/6p1/pp1p2p1/NRQK2R1 b - - 0 1");
+    expected.clear();
+    expected = {
+        Move(C5, D4, Move::MoveType::capture),
+        Move(D7, E6, Move::MoveType::capture),
+        Move(F6, E5, Move::MoveType::capture),
+        Move(D7, C6, Move::MoveType::capture),
+
+        Move(A2, B1, Move::MoveType::queenPromoCapture),
+        Move(A2, B1, Move::MoveType::rookPromoCapture),
+        Move(A2, B1, Move::MoveType::bishopPromoCapture),
+        Move(A2, B1, Move::MoveType::knightPromoCapture),
+
+        Move(B2, C1, Move::MoveType::queenPromoCapture),
+        Move(B2, C1, Move::MoveType::rookPromoCapture),
+        Move(B2, C1, Move::MoveType::bishopPromoCapture),
+        Move(B2, C1, Move::MoveType::knightPromoCapture),
+
+        Move(B2, A1, Move::MoveType::queenPromoCapture),
+        Move(B2, A1, Move::MoveType::rookPromoCapture),
+        Move(B2, A1, Move::MoveType::bishopPromoCapture),
+        Move(B2, A1, Move::MoveType::knightPromoCapture),
+
+        Move(D2, C1, Move::MoveType::queenPromoCapture),
+        Move(D2, C1, Move::MoveType::rookPromoCapture),
+        Move(D2, C1, Move::MoveType::bishopPromoCapture),
+        Move(D2, C1, Move::MoveType::knightPromoCapture),       
+    };
+
+    actual.clear();
+    p.moveGenerator->populatePawnMoves(
+        actual, 
+        p.pieceBitboards[Piece::blackPawn], 
+        p.occupied, 
+        p.occupiedByColor[Color::white], 
+        p.colorToMove, 
+        pushMask, 
+        captureMask);
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
+    Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+
+    // Both white pawns can capture EP
+    Position p = Position("2k5/8/3P4/1PpP4/2P5/8/5P2/3K4 w - c6 0 5");
+    std::vector<Move> expected = {
+        Move(B5, C6, Move::MoveType::epCapture),
+        Move(D5, C6, Move::MoveType::epCapture)
+    };
+
+    std::vector<Move> actual;
+    p.moveGenerator->populatePawnEnPassantMoves(
+        actual,
+        p.pieceBitboards[Piece::whitePawn],
+        Color::white,
+        p.enPassantTarget,
+        pushMask,
+        captureMask);
+    ASSERT_EQ(expected, actual);
+
+    // Both black pawns can capture EP
+    p = Position("1k6/8/8/8/3p1pPp/1P3P2/8/5K2 b - g3 0 1");
+    expected.clear();
+    expected = {
+        Move(F4, G3, Move::MoveType::epCapture),
+        Move(H4, G3, Move::MoveType::epCapture)
+    };
+
+    actual.clear();
+    p.moveGenerator->populatePawnEnPassantMoves(
+        actual,
+        p.pieceBitboards[Piece::blackPawn],
+        Color::black,
+        p.enPassantTarget,
+        pushMask,
+        captureMask);
+    ASSERT_EQ(expected, actual);
+
+    // Nobody can capture EP
+    p = Position("4k3/4P3/1R4P1/5p2/3P1p1p/8/8/5K2 w - f6 0 3");
+    expected.clear();
+    actual.clear();
+    p.moveGenerator->populatePawnEnPassantMoves(
+        actual,
+        p.pieceBitboards[Piece::whitePawn],
+        Color::white,
+        p.enPassantTarget,
+        pushMask,
+        captureMask);
+    ASSERT_EQ(expected, actual);
+
+    // Only 1 pawn can capture east EP 
+    p = Position("4k3/8/1R6/8/1pP4p/3pPP2/8/5K2 b - c3 0 3");
+    expected.clear();
+    expected = {
+        Move(B4, C3, Move::MoveType::epCapture),
+    };
+
+    actual.clear();
+    p.moveGenerator->populatePawnEnPassantMoves(
+        actual,
+        p.pieceBitboards[Piece::blackPawn],
+        Color::black,
+        p.enPassantTarget,
+        pushMask,
+        captureMask);
+    ASSERT_EQ(expected, actual);
+
+    // Only 1 pawn can capture west EP 
+    p = Position("4k3/8/1R6/8/2Pp4/1p2P3/1p3P2/5K2 b - c3 0 3");
+    expected.clear();
+    expected = {
+        Move(D4, C3, Move::MoveType::epCapture),
+    };
+
+    actual.clear();
+    p.moveGenerator->populatePawnEnPassantMoves(
+        actual,
+        p.pieceBitboards[Piece::blackPawn],
+        Color::black,
+        p.enPassantTarget,
+        pushMask,
+        captureMask);
+    ASSERT_EQ(expected, actual);
+
 }

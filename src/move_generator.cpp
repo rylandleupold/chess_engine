@@ -133,20 +133,23 @@ Bitboard MoveGenerator::pawnCaptures(Bitboard pawns, Color color) {
 }
 
 Bitboard MoveGenerator::pawnPushes(Bitboard pawns, Color color, Bitboard occupied) {
-    Bitboard targets;
+    if (color == Color::black) {
+        return (pawns.shiftS() & ~occupied);
+    } else {
+        return (pawns.shiftN() & ~occupied);
+    }
+} 
+
+Bitboard MoveGenerator::pawnDoublePushes(Bitboard pawns, Color color, Bitboard occupied) {
     Bitboard singlePushes;
     if (color == Color::black) {
         singlePushes = (pawns.shiftS() & ~occupied);
-        targets |= singlePushes;
-        targets |= ((singlePushes & Mask::RANK_6).shiftS() & ~occupied);
+        return ((singlePushes & Mask::RANK_6).shiftS() & ~occupied);
     } else {
         singlePushes = (pawns.shiftN() & ~occupied);
-        targets |= singlePushes;
-        targets |= ((singlePushes & Mask::RANK_3).shiftN() & ~occupied);
+        return ((singlePushes & Mask::RANK_3).shiftN() & ~occupied);
     }
-    return targets;
 }
-
 
 Bitboard MoveGenerator::attacksToKing(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Color kingColor) {
     Square kingSquare = pieceBitboards[Piece::blackKing + kingColor].lsb();
@@ -189,6 +192,7 @@ void MoveGenerator::populateMoveList(std::vector<Move>& moveList, Position& p) {
     // Remove old moves
     moveList.clear();
 
+    // All squares are valid for pushing and capturing unless we are in check
     Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
     Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
 
@@ -231,4 +235,104 @@ void MoveGenerator::populateKingMoves(std::vector<Move>& moveList, Bitboard king
         pushes.clearLsb();
     }
 }
+
+void MoveGenerator::populatePawnMoves(std::vector<Move>& moveList, Bitboard pawnBitboard, Bitboard occupied, Bitboard opPieces, Color colorToMove, Bitboard pushMask, Bitboard captureMask) {
+    Bitboard singlePushes = pawnPushes(pawnBitboard, colorToMove, occupied) & pushMask;
+    Bitboard doublePushes = pawnDoublePushes(pawnBitboard, colorToMove, occupied) & pushMask;
+    Bitboard capturesEast = pawnCapturesEast(pawnBitboard, colorToMove) & opPieces & captureMask;
+    Bitboard capturesWest = pawnCapturesWest(pawnBitboard, colorToMove) & opPieces & captureMask;
+
+    int eastOffset, westOffset, pushOffset;
+    Bitboard promotions, promoCapturesEast, promoCapturesWest;
+    if (colorToMove == Color::white) {
+        eastOffset = -9;
+        westOffset = -7;
+        pushOffset = -8;
+        promotions = singlePushes & Mask::RANK_8;
+        singlePushes &= Mask::NOT_RANK_8;
+        promoCapturesEast = capturesEast & Mask::RANK_8;
+        capturesEast &= Mask::NOT_RANK_8;
+        promoCapturesWest = capturesWest & Mask::RANK_8;
+        capturesWest &= Mask::NOT_RANK_8;
+    } else {
+        eastOffset = 7;
+        westOffset = 9;
+        pushOffset = 8;
+        promotions = singlePushes & Mask::RANK_1;
+        singlePushes &= Mask::NOT_RANK_1;
+        promoCapturesEast = capturesEast & Mask::RANK_1;
+        capturesEast &= Mask::NOT_RANK_1;
+        promoCapturesWest = capturesWest & Mask::RANK_1;
+        capturesWest &= Mask::NOT_RANK_1;
+    }
+
+    Square target;
+    while (!capturesEast.isEmpty()) {
+        target = capturesEast.lsb();
+        moveList.push_back(Move(Square(target + eastOffset), target, Move::MoveType::capture));
+        capturesEast.clearLsb();
+    }
+    while (!capturesWest.isEmpty()) {
+        target = capturesWest.lsb();
+        moveList.push_back(Move(Square(target + westOffset), target, Move::MoveType::capture));
+        capturesWest.clearLsb();
+    }
+    while (!doublePushes.isEmpty()) {
+        target = doublePushes.lsb();
+        moveList.push_back(Move(Square(target + (2*pushOffset)), target, Move::MoveType::doublePawnPush));
+        doublePushes.clearLsb();
+    }
+    while (!singlePushes.isEmpty()) {
+        target = singlePushes.lsb();
+        moveList.push_back(Move(Square(target + pushOffset), target, Move::MoveType::quiet));
+        singlePushes.clearLsb();
+    }
+    while (!promotions.isEmpty()) {
+        target = promotions.lsb();
+        moveList.push_back(Move(Square(target + pushOffset), target, Move::MoveType::queenPromo));
+        moveList.push_back(Move(Square(target + pushOffset), target, Move::MoveType::rookPromo));
+        moveList.push_back(Move(Square(target + pushOffset), target, Move::MoveType::bishopPromo));
+        moveList.push_back(Move(Square(target + pushOffset), target, Move::MoveType::knightPromo));
+        promotions.clearLsb();
+    }
+    while (!promoCapturesEast.isEmpty()) {
+        target = promoCapturesEast.lsb();
+        moveList.push_back(Move(Square(target + eastOffset), target, Move::MoveType::queenPromoCapture));
+        moveList.push_back(Move(Square(target + eastOffset), target, Move::MoveType::rookPromoCapture));
+        moveList.push_back(Move(Square(target + eastOffset), target, Move::MoveType::bishopPromoCapture));
+        moveList.push_back(Move(Square(target + eastOffset), target, Move::MoveType::knightPromoCapture));
+        promoCapturesEast.clearLsb();
+    }
+    while (!promoCapturesWest.isEmpty()) {
+        target = promoCapturesWest.lsb();
+        moveList.push_back(Move(Square(target + westOffset), target, Move::MoveType::queenPromoCapture));
+        moveList.push_back(Move(Square(target + westOffset), target, Move::MoveType::rookPromoCapture));
+        moveList.push_back(Move(Square(target + westOffset), target, Move::MoveType::bishopPromoCapture));
+        moveList.push_back(Move(Square(target + westOffset), target, Move::MoveType::knightPromoCapture));
+        promoCapturesWest.clearLsb();
+    }
+}
+
+void MoveGenerator::populatePawnEnPassantMoves(std::vector<Move>& moveList, Bitboard pawnBitboard, Color colorToMove, Square epTargetSquare, Bitboard pushMask, Bitboard captureMask) {
+    if (epTargetSquare == Square::noSquare) {
+        return;
+    }
+    Square eastOrigin, westOrigin, epPawnSquare;
+    if (colorToMove == Color::white) {
+        eastOrigin = Square(epTargetSquare - 9);
+        westOrigin = Square(epTargetSquare - 7);
+        epPawnSquare = Square(epTargetSquare - 8);
+    } else {
+        eastOrigin = Square(epTargetSquare + 7);
+        westOrigin = Square(epTargetSquare + 9);
+        epPawnSquare = Square(epTargetSquare + 8);
+    }
+    if (pawnBitboard.isSet(eastOrigin) && (captureMask.isSet(epPawnSquare) || pushMask.isSet(epTargetSquare))) {
+        moveList.push_back(Move(eastOrigin, epTargetSquare, Move::MoveType::epCapture));
+    }
+    if (pawnBitboard.isSet(westOrigin) && (captureMask.isSet(epPawnSquare) || pushMask.isSet(epTargetSquare))) {
+        moveList.push_back(Move(westOrigin, epTargetSquare, Move::MoveType::epCapture));
+    }
+}
+
 

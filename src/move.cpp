@@ -54,3 +54,11 @@ bool operator==(const Move& m1, const Move& m2) {
 bool operator!=(const Move& m1, const Move& m2) {
     return !(m1 == m2);
 }
+
+std::string Move::toString() const {
+    return "[" + squareToString(getOrigin()) + "->" + squareToString(getTarget()) + " " + moveTypeToString(getMoveType()) + "]";
+}
+
+std::ostream& operator<<(std::ostream& os, const Move move) {
+    return os << move.toString();
+}

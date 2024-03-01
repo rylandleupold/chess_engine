@@ -1,6 +1,7 @@
 #ifndef MOVE_H
 #define MOVE_H
 
+#include <iostream>
 #include <cstdint>
 #include "square.h"
 
@@ -32,9 +33,33 @@ public:
     bool isCapture();
     bool isPromotion();
 
+    std::string toString() const;
+
     void operator=(Move m);
     friend bool operator==(const Move& m1, const Move& m2);
     friend bool operator!=(const Move& m1, const Move& m2);
 };
+
+std::ostream& operator<<(std::ostream& os, const Move move);
+
+static const std::string moveTypeToString(Move::MoveType moveType) {
+    switch (moveType) {
+        case (Move::MoveType::quiet): return "Quiet";
+        case (Move::MoveType::doublePawnPush): return "DPP";
+        case (Move::MoveType::kingCastle): return "KCastle";
+        case (Move::MoveType::queenCastle): return "QCastle";
+        case (Move::MoveType::capture): return "Capture";
+        case (Move::MoveType::epCapture): return "EPCapture";
+        case (Move::MoveType::knightPromo): return "NPromo";
+        case (Move::MoveType::bishopPromo): return "BPromo";
+        case (Move::MoveType::rookPromo): return "RPromo";
+        case (Move::MoveType::queenPromo): return "QPromo";
+        case (Move::MoveType::knightPromoCapture): return "NPromoCap";
+        case (Move::MoveType::bishopPromoCapture): return "BPromoCap";
+        case (Move::MoveType::rookPromoCapture): return "RPromoCap";
+        case (Move::MoveType::queenPromoCapture): return "QPromoCap";
+        default: return "Unknown";
+    }
+}
 
 #endif
