@@ -437,92 +437,98 @@ TEST(move_generator_test, move_generator_pawnDoublePushes_blocked_test) {
 }
 
 TEST(move_generator_test, move_generator_atacksToKing_test) {
+    MoveGenerator m;
+
     // W attacked by all B pieces
     Position wAttacked1 = Position("8/3r4/8/8/1np1p3/3K4/4b3/1q2n3 w - - 0 1");
     Bitboard wExpected1;
     wExpected1.set(std::vector<Square> {D7, B4, C4, E4, E2, E1, B1});
-    ASSERT_EQ(wAttacked1.moveGenerator->attacksToKing(wAttacked1.pieceBitboards, wAttacked1.occupied, Color::white), wExpected1);
+    ASSERT_EQ(m.attacksToKing(wAttacked1.pieceBitboards, wAttacked1.occupied, Color::white), wExpected1);
 
     // W attacked by B pieces, some blocked by other B pieces
     Position wAttacked2 = Position("3q4/3r4/q7/4n3/1nr1p3/r1pK4/8/1b6 w - - 0 1");
     Bitboard wExpected2;
     wExpected2.set(std::vector<Square> {D7, E5, E4, B4, B1});
-    ASSERT_EQ(wAttacked2.moveGenerator->attacksToKing(wAttacked2.pieceBitboards, wAttacked2.occupied, Color::white), wExpected2);
+    ASSERT_EQ(m.attacksToKing(wAttacked2.pieceBitboards, wAttacked2.occupied, Color::white), wExpected2);
 
     // W attacked by no B pieces, but with no squares to move to
     Position wAttacked3 = Position("5q2/5r2/4n3/3b4/8/r2pK1kq/r4p2/2nq4 w - - 0 1");
     Bitboard wExpected3;
-    ASSERT_EQ(wAttacked3.moveGenerator->attacksToKing(wAttacked3.pieceBitboards, wAttacked3.occupied, Color::white), wExpected3);
+    ASSERT_EQ(m.attacksToKing(wAttacked3.pieceBitboards, wAttacked3.occupied, Color::white), wExpected3);
 
     // W attacked by B pieces, but all except knights are blocked by W pieces
     Position wAttacked4 = Position("7b/q5k1/1P1r4/1n1Q4/3K1N1r/2P1B3/1N6/q5b1 w - - 0 1");
     Bitboard wExpected4;
     wExpected4.set(std::vector<Square> {B5});
-    ASSERT_EQ(wAttacked4.moveGenerator->attacksToKing(wAttacked4.pieceBitboards, wAttacked4.occupied, Color::white), wExpected4);
+    ASSERT_EQ(m.attacksToKing(wAttacked4.pieceBitboards, wAttacked4.occupied, Color::white), wExpected4);
 
     // B attacked by all W pieces
     Position bAttacked1 = Position("3Q4/6BN/R4k2/4P1P1/4N3/5R2/8/8 b - - 0 1");
     Bitboard bExpected1;
     bExpected1.set(std::vector<Square> {A6, D8,E4, E5, F3, G5, G7, H7});
-    ASSERT_EQ(bAttacked1.moveGenerator->attacksToKing(bAttacked1.pieceBitboards, bAttacked1.occupied, Color::black), bExpected1);
+    ASSERT_EQ(m.attacksToKing(bAttacked1.pieceBitboards, bAttacked1.occupied, Color::black), bExpected1);
 
     // B attacked by W pieces, some blocked by other W pieces
     Position bAttacked2 = Position("3B3Q/3N2K1/3P4/R2Nk3/3P4/6B1/4R3/4Q3 b - - 0 1");
     Bitboard bExpected2;
     bExpected2.set(std::vector<Square> {E2, D4, G3, D7});
-    ASSERT_EQ(bAttacked2.moveGenerator->attacksToKing(bAttacked2.pieceBitboards, bAttacked2.occupied, Color::black), bExpected2);
+    ASSERT_EQ(m.attacksToKing(bAttacked2.pieceBitboards, bAttacked2.occupied, Color::black), bExpected2);
 
     // B attacked by no W pieces, but with no squares to move to
     Position bAttacked3 = Position("5RQ1/1Pk5/8/NBP3P1/4N3/8/8/R7 b - - 0 1");
     Bitboard bExpected3;
-    ASSERT_EQ(bAttacked3.moveGenerator->attacksToKing(bAttacked3.pieceBitboards, bAttacked3.occupied, Color::black), bExpected3);
+    ASSERT_EQ(m.attacksToKing(bAttacked3.pieceBitboards, bAttacked3.occupied, Color::black), bExpected3);
 
     // B attacked by W pieces, but all except knights are blocked by B pieces
     Position bAttacked4 = Position("8/3N2B1/4rq2/QR1bkp1Q/3p4/8/1B2K3/4Q3 w - - 0 1");
     Bitboard bExpected4;
     bExpected4.set(std::vector<Square> {D7});
-    ASSERT_EQ(bAttacked4.moveGenerator->attacksToKing(bAttacked4.pieceBitboards, bAttacked4.occupied, Color::black), bExpected4);
+    ASSERT_EQ(m.attacksToKing(bAttacked4.pieceBitboards, bAttacked4.occupied, Color::black), bExpected4);
 }
 
 TEST(move_generator_test, move_generator_kingDangerSquares_test) {
+    MoveGenerator m;
+
     // All black pieces, check x-ray on white king
     Position p1("8/4K3/1NN5/1Nq2p2/1NkN3b/6N1/3NrN2/4N3 w - - 0 1");
     Bitboard expected1;
     Bitboard p1Occupied = p1.occupied;
     expected1.set(std::vector<Square> {B6, B5, B4, C4, C6, D4, D5, D6, E7, F8, E5, F5, B3, C5, C3, D3, D2, E1, F2, E3, E4, E5, E6, E7, E8, G4, G3, G5, F6, D8});
-    ASSERT_EQ(p1.moveGenerator->kingDangerSquares(p1.pieceBitboards, p1.occupied, Color::white), expected1);
+    ASSERT_EQ(m.kingDangerSquares(p1.pieceBitboards, p1.occupied, Color::white), expected1);
     ASSERT_EQ(p1Occupied, p1.occupied);
 
     // All black pieces, check blocking by white pieces
     Position p2("8/8/8/8/1ppr4/1b1Qn3/2K5/8 w - - 0 1");
     Bitboard expected2;
     expected2.set(std::vector<Square> {A4, A2, C2, D1, C4, A3, C3, B3, D3, D5, D6, D7, D8, F1, G2, G4, F5, E4, F4, G4, H4});
-    ASSERT_EQ(p2.moveGenerator->kingDangerSquares(p2.pieceBitboards, p2.occupied, Color::white), expected2);
+    ASSERT_EQ(m.kingDangerSquares(p2.pieceBitboards, p2.occupied, Color::white), expected2);
 
     // Completely empty board except white king
     Position p3("8/8/8/8/8/8/8/K7 w - - 0 1");
     Bitboard expected3;
-    ASSERT_EQ(p3.moveGenerator->kingDangerSquares(p3.pieceBitboards, p3.occupied, Color::white), expected3);
+    ASSERT_EQ(m.kingDangerSquares(p3.pieceBitboards, p3.occupied, Color::white), expected3);
 
     // All white pieces, check x-ray on black king
     Position p4("Q1N5/P7/2k5/8/B1R1n3/1P6/8/8 w - - 0 1");
     Bitboard expected4;
     expected4.set(std::vector<Square> {A7, B7, C6, D5, E4, B8, C8, B3, B5, C6, D7, E8, A4, C4, B4, D4, E4, C3, C2, C1, C5, C6, C7, C8, B6, D6, E7});
-    ASSERT_EQ(p4.moveGenerator->kingDangerSquares(p4.pieceBitboards, p4.occupied, Color::black), expected4);
+    ASSERT_EQ(m.kingDangerSquares(p4.pieceBitboards, p4.occupied, Color::black), expected4);
 
     // All white pieces, check blocking black pieces
     Position p5("8/3b4/1Rp1kr1Q/1P4p1/2n3NP/8/B7/7K w - - 0 1");
     Bitboard expected5;
     expected5.set(std::vector<Square> {B1, B3, C4, A6, C6, B5, B7, B8, G1, G2, H2, F2, E3, E5, F6, H6, G5, H5, H4, G5, G6, G7, F8, H7, H8});
-    ASSERT_EQ(p5.moveGenerator->kingDangerSquares(p5.pieceBitboards, p5.occupied, Color::black), expected5);
+    ASSERT_EQ(m.kingDangerSquares(p5.pieceBitboards, p5.occupied, Color::black), expected5);
 
     // Completely empty board except black king
     Position p6("8/8/8/1k6/8/8/8/8 b - - 0 1");
     Bitboard expected6;
-    ASSERT_EQ(p6.moveGenerator->kingDangerSquares(p6.pieceBitboards, p6.occupied, Color::black), expected6);
+    ASSERT_EQ(m.kingDangerSquares(p6.pieceBitboards, p6.occupied, Color::black), expected6);
 }
 
 TEST(move_generator_test, move_generator_populateMoveList_double_check_test) {
+    MoveGenerator m;
+
     // White king checked 3 times, no other white pieces
     Position p1 = Position("3r4/8/8/b7/4n3/8/3K4/8 w - - 0 1");
     std::vector<Move> expected1 {
@@ -531,7 +537,7 @@ TEST(move_generator_test, move_generator_populateMoveList_double_check_test) {
         Move(D2, E2, Move::MoveType::quiet),
         Move(D2, E3, Move::MoveType::quiet)};
     std::vector<Move> actual1 {};
-    p1.moveGenerator->populateMoveList(actual1, p1);
+    m.populateMoveList(actual1, p1);
     ASSERT_EQ(expected1, actual1);
 
     // Test white blocking some black attacks to king
@@ -543,14 +549,14 @@ TEST(move_generator_test, move_generator_populateMoveList_double_check_test) {
         Move(E3, D4, Move::MoveType::quiet),
         Move(E3, E4, Move::MoveType::quiet)};
     std::vector<Move> actual2 {};
-    p2.moveGenerator->populateMoveList(actual2, p2);
+    m.populateMoveList(actual2, p2);
     ASSERT_EQ(expected2, actual2);
 
     // White king is in checkmate
     Position p3 = Position("8/8/8/rq2b3/8/8/2Pp4/1Kn5 w - - 0 1");
     std::vector<Move> expected3{};
     std::vector<Move> actual3{};
-    p3.moveGenerator->populateMoveList(actual3, p3);
+    m.populateMoveList(actual3, p3);
     ASSERT_EQ(expected3, actual3);
 
     // Black king checked 3 times, no other black pieces
@@ -560,7 +566,7 @@ TEST(move_generator_test, move_generator_populateMoveList_double_check_test) {
         Move(E7, D6, Move::MoveType::quiet),
         Move(E7, F8, Move::MoveType::quiet)};
     std::vector<Move> actual4 {};
-    p4.moveGenerator->populateMoveList(actual4, p4);
+    m.populateMoveList(actual4, p4);
     ASSERT_EQ(expected4, actual4);
 
     // Black can capture some, but not others, white blocked by some black pieces
@@ -569,7 +575,7 @@ TEST(move_generator_test, move_generator_populateMoveList_double_check_test) {
         Move(C6, B7, Move::MoveType::capture),
         Move(C6, D5, Move::MoveType::quiet)};
     std::vector<Move> actual5 {};
-    p5.moveGenerator->populateMoveList(actual5, p5);
+    m.populateMoveList(actual5, p5);
     ASSERT_EQ(expected5, actual5);
 
     // Black king, one white piece defended by x-ray, another is not
@@ -578,11 +584,13 @@ TEST(move_generator_test, move_generator_populateMoveList_double_check_test) {
         Move(E5, F6, Move::MoveType::capture),
         Move(E5, E6, Move::MoveType::quiet)};
     std::vector<Move> actual6 {};
-    p6.moveGenerator->populateMoveList(actual6, p6);
+    m.populateMoveList(actual6, p6);
     ASSERT_EQ(expected6, actual6);
 }
 
 TEST(move_generator_test, move_generator_populatePawnMoves_test) {
+    MoveGenerator m;
+
     Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
     Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
 
@@ -602,12 +610,9 @@ TEST(move_generator_test, move_generator_populatePawnMoves_test) {
     };
 
     std::vector<Move> actual;
-    p.moveGenerator->populatePawnMoves(
-        actual, 
-        p.pieceBitboards[Piece::whitePawn], 
-        p.occupied, 
-        p.occupiedByColor[Color::black], 
-        p.colorToMove, 
+    m.populatePawnMoves(
+        actual,
+        p, 
         pushMask, 
         captureMask);
     
@@ -644,12 +649,9 @@ TEST(move_generator_test, move_generator_populatePawnMoves_test) {
     };
 
     actual.clear();
-    p.moveGenerator->populatePawnMoves(
-        actual, 
-        p.pieceBitboards[Piece::whitePawn], 
-        p.occupied, 
-        p.occupiedByColor[Color::black], 
-        p.colorToMove, 
+    m.populatePawnMoves(
+        actual,
+        p, 
         pushMask, 
         captureMask);
     ASSERT_EQ(expected, actual);
@@ -671,12 +673,9 @@ TEST(move_generator_test, move_generator_populatePawnMoves_test) {
     };
 
     actual.clear();
-    p.moveGenerator->populatePawnMoves(
-        actual, 
-        p.pieceBitboards[Piece::blackPawn], 
-        p.occupied, 
-        p.occupiedByColor[Color::white], 
-        p.colorToMove, 
+    m.populatePawnMoves(
+        actual,
+        p, 
         pushMask, 
         captureMask);
     ASSERT_EQ(expected, actual);
@@ -712,18 +711,17 @@ TEST(move_generator_test, move_generator_populatePawnMoves_test) {
     };
 
     actual.clear();
-    p.moveGenerator->populatePawnMoves(
-        actual, 
-        p.pieceBitboards[Piece::blackPawn], 
-        p.occupied, 
-        p.occupiedByColor[Color::white], 
-        p.colorToMove, 
+    m.populatePawnMoves(
+        actual,
+        p, 
         pushMask, 
         captureMask);
     ASSERT_EQ(expected, actual);
 }
 
 TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
+    MoveGenerator m;
+
     Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
     Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
 
@@ -735,11 +733,9 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
     };
 
     std::vector<Move> actual;
-    p.moveGenerator->populatePawnEnPassantMoves(
+    m.populatePawnEnPassantMoves(
         actual,
-        p.pieceBitboards[Piece::whitePawn],
-        Color::white,
-        p.enPassantTarget,
+        p,
         pushMask,
         captureMask);
     ASSERT_EQ(expected, actual);
@@ -753,11 +749,9 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
     };
 
     actual.clear();
-    p.moveGenerator->populatePawnEnPassantMoves(
+    m.populatePawnEnPassantMoves(
         actual,
-        p.pieceBitboards[Piece::blackPawn],
-        Color::black,
-        p.enPassantTarget,
+        p,
         pushMask,
         captureMask);
     ASSERT_EQ(expected, actual);
@@ -766,11 +760,9 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
     p = Position("4k3/4P3/1R4P1/5p2/3P1p1p/8/8/5K2 w - f6 0 3");
     expected.clear();
     actual.clear();
-    p.moveGenerator->populatePawnEnPassantMoves(
+    m.populatePawnEnPassantMoves(
         actual,
-        p.pieceBitboards[Piece::whitePawn],
-        Color::white,
-        p.enPassantTarget,
+        p,
         pushMask,
         captureMask);
     ASSERT_EQ(expected, actual);
@@ -783,11 +775,9 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
     };
 
     actual.clear();
-    p.moveGenerator->populatePawnEnPassantMoves(
+    m.populatePawnEnPassantMoves(
         actual,
-        p.pieceBitboards[Piece::blackPawn],
-        Color::black,
-        p.enPassantTarget,
+        p,
         pushMask,
         captureMask);
     ASSERT_EQ(expected, actual);
@@ -800,13 +790,74 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
     };
 
     actual.clear();
-    p.moveGenerator->populatePawnEnPassantMoves(
+    m.populatePawnEnPassantMoves(
         actual,
-        p.pieceBitboards[Piece::blackPawn],
-        Color::black,
-        p.enPassantTarget,
+        p,
         pushMask,
         captureMask);
     ASSERT_EQ(expected, actual);
+}
 
+TEST(move_generator_test, move_generator_populateKnightMoves_test) {
+    MoveGenerator m;
+
+    Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+
+    // White knights in corner, side, and middle, quiet, capture, and blocked by own pieces
+    Position p = Position("N3r1k1/2P3N1/1P1N2b1/1b3R2/2P4N/1b6/5P2/NK5N w - - 0 1");
+    std::vector<Move> expected = {
+        Move(A1, B3, Move::MoveType::capture),
+        Move(A1, C2, Move::MoveType::quiet),
+
+        Move(H1, G3, Move::MoveType::quiet),
+
+        Move(H4, G6, Move::MoveType::capture),
+        Move(H4, G2, Move::MoveType::quiet),
+        Move(H4, F3, Move::MoveType::quiet),
+
+        Move(D6, B5, Move::MoveType::capture),
+        Move(D6, E8, Move::MoveType::capture),
+        Move(D6, E4, Move::MoveType::quiet),
+        Move(D6, B7, Move::MoveType::quiet),
+        Move(D6, F7, Move::MoveType::quiet),
+        Move(D6, C8, Move::MoveType::quiet),
+
+        Move(G7, E8, Move::MoveType::capture),
+        Move(G7, H5, Move::MoveType::quiet),
+        Move(G7, E6, Move::MoveType::quiet)
+    };
+
+    std::vector<Move> actual;
+    m.populateKnightMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(expected, actual);
+
+    // Black knights in corner, side, and middle, quiet, capture, and blocked by own pieces
+    p = Position("n6n/3q1p1k/bR2Q1p1/2n3n1/5P1N/1N5b/1Kp3n1/n3q3 b - - 0 1");
+    expected.clear();
+    expected = {
+        Move(A1, B3, Move::MoveType::capture),
+
+        Move(G2, F4, Move::MoveType::capture),
+        Move(G2, H4, Move::MoveType::capture),
+        Move(G2, E3, Move::MoveType::quiet),
+
+        Move(C5, B3, Move::MoveType::capture),
+        Move(C5, E6, Move::MoveType::capture),
+        Move(C5, D3, Move::MoveType::quiet),
+        Move(C5, A4, Move::MoveType::quiet),
+        Move(C5, E4, Move::MoveType::quiet),
+        Move(C5, B7, Move::MoveType::quiet),
+
+        Move(G5, E6, Move::MoveType::capture),
+        Move(G5, F3, Move::MoveType::quiet),
+        Move(G5, E4, Move::MoveType::quiet),
+
+        Move(A8, B6, Move::MoveType::capture),
+        Move(A8, C7, Move::MoveType::quiet)
+    };
+
+    actual.clear();
+    m.populateKnightMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(expected, actual);
 }

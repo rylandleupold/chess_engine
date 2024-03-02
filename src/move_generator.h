@@ -36,12 +36,35 @@ public:
     Bitboard pawnPushes(Bitboard pawns, Color color, Bitboard occupied);
     Bitboard pawnDoublePushes(Bitboard pawns, Color color, Bitboard occupied);
     
-    void populateMoveList(std::vector<Move>& moveList, Position& p);
-    void populateKingMoves(std::vector<Move>& moveList, Bitboard kingBitboard, Bitboard dangerSquares, Bitboard occupied, Bitboard opPieces);
-    void populatePawnMoves(std::vector<Move>& moveList, Bitboard pawnBitboard, Bitboard occupied, Bitboard opPieces, Color colorToMove, Bitboard pushMask, Bitboard captureMask);
-    void populatePawnEnPassantMoves(std::vector<Move>& moveList, Bitboard pawnBitboard, Color colorToMove, Square epTargetSquare, Bitboard pushMask, Bitboard captureMask);
-    Bitboard attacksToKing(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Color kingColor);
-    Bitboard kingDangerSquares(const std::array<Bitboard, 12>& pieceBitboards, Bitboard occupied, Color kingColor);
+    Bitboard attacksToKing(
+        const std::array<Bitboard, 12>& pieceBitboards, 
+        const Bitboard& occupied, 
+        Color kingColor);
+    Bitboard kingDangerSquares(
+        const std::array<Bitboard, 12>& pieceBitboards, 
+        const Bitboard& occupied,
+        Color kingColor);
+
+    void populateMoveList(std::vector<Move>& moveList, const Position& p);
+    void populateKingMoves(
+        std::vector<Move>& moveList,
+        const Position& p,
+        const Bitboard& dangerSquares);
+    void populatePawnMoves(
+        std::vector<Move>& moveList, 
+        const Position& p,
+        const Bitboard& pushMask, 
+        const Bitboard& captureMask);
+    void populatePawnEnPassantMoves(
+        std::vector<Move>& moveList,
+        const Position& p,
+        const Bitboard& pushMask, 
+        const Bitboard& captureMask);
+    void populateKnightMoves(
+        std::vector<Move>& moveList,
+        const Position& p, 
+        const Bitboard& pushMask, 
+        const Bitboard& captureMask);
 };
 
 #endif

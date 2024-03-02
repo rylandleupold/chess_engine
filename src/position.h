@@ -11,10 +11,6 @@
 #include "piece.h"
 #include "square.h"
 
-// Forward declare MoveGenerator class and include header in position.cpp 
-// to avoid circular dependency
-class MoveGenerator;
-
 class Position {
 private:
 	std::array<std::string, 8> getCombinedBitboardsStr();
@@ -47,7 +43,6 @@ public:
 	Color colorToMove;
 	CastlingRights castlingRights;
 	Square enPassantTarget;
-	MoveGenerator* moveGenerator;
 
 	Position();
 	Position(std::string fenString);

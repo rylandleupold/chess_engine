@@ -1,13 +1,10 @@
 #include "position.h"
-#include "move_generator.h"
 
 Position::Position() {
 	fullMoveCounter = 1;
 	halfmoveClock = 0;
 	colorToMove = Color::white;
 	enPassantTarget = Square::noSquare;
-
-	moveGenerator = new MoveGenerator();
 
 	initializePieceBitboardFromPieceList();
 	initializeOccupiedFromPieceList();
@@ -21,8 +18,6 @@ Position::Position(std::string fenString) {
 	colorToMove = fenParser.getSideToMove();
 	enPassantTarget = fenParser.getEpTargetSquare();
 	castlingRights = fenParser.getCastlingRights();
-
-	moveGenerator = new MoveGenerator();
 
 	pieceList = fenParser.getPieceList();
 	initializePieceBitboardFromPieceList();

@@ -58,7 +58,7 @@ public:
 	void operator&=(const Bitboard& b);
 	friend Bitboard operator^(const Bitboard& b1, const Bitboard& b2);
 	void operator^=(const Bitboard& b);
-	Bitboard operator~();
+	Bitboard operator~() const;
 };
 
 #endif
