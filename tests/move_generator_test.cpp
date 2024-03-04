@@ -553,7 +553,7 @@ TEST(move_generator_test, move_generator_populateMoveList_double_check_test) {
     ASSERT_EQ(expected2, actual2);
 
     // White king is in checkmate
-    Position p3 = Position("8/8/8/rq2b3/8/8/2Pp4/1Kn5 w - - 0 1");
+    Position p3 = Position("8/8/8/rq2b3/8/8/p1Pp4/1Kn5 w - - 0 1");
     std::vector<Move> expected3{};
     std::vector<Move> actual3{};
     m.populateMoveList(actual3, p3);
@@ -593,6 +593,7 @@ TEST(move_generator_test, move_generator_populatePawnMoves_test) {
 
     Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
     Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pinned = Bitboard();
 
     // Test white pushes, double pushes, and promotion
     Position p = Position("1k6/4P3/2Pq4/3Pp2P/3p2b1/nP4n1/P2PP1P1/3K4 w - - 0 1");
@@ -614,7 +615,8 @@ TEST(move_generator_test, move_generator_populatePawnMoves_test) {
         actual,
         p, 
         pushMask, 
-        captureMask);
+        captureMask,
+        pinned);
     
     ASSERT_EQ(expected, actual);
 
@@ -653,7 +655,8 @@ TEST(move_generator_test, move_generator_populatePawnMoves_test) {
         actual,
         p, 
         pushMask, 
-        captureMask);
+        captureMask,
+        pinned);
     ASSERT_EQ(expected, actual);
 
     // Test black pushes, double pushes, and promotions
@@ -677,7 +680,8 @@ TEST(move_generator_test, move_generator_populatePawnMoves_test) {
         actual,
         p, 
         pushMask, 
-        captureMask);
+        captureMask,
+        pinned);
     ASSERT_EQ(expected, actual);
 
     // Test black captures and promoCaptures east and west
@@ -715,7 +719,8 @@ TEST(move_generator_test, move_generator_populatePawnMoves_test) {
         actual,
         p, 
         pushMask, 
-        captureMask);
+        captureMask,
+        pinned);
     ASSERT_EQ(expected, actual);
 }
 
@@ -724,6 +729,7 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
 
     Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
     Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pinned = Bitboard();
 
     // Both white pawns can capture EP
     Position p = Position("2k5/8/3P4/1PpP4/2P5/8/5P2/3K4 w - c6 0 5");
@@ -737,7 +743,8 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
         actual,
         p,
         pushMask,
-        captureMask);
+        captureMask,
+        pinned);
     ASSERT_EQ(expected, actual);
 
     // Both black pawns can capture EP
@@ -753,7 +760,8 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
         actual,
         p,
         pushMask,
-        captureMask);
+        captureMask,
+        pinned);
     ASSERT_EQ(expected, actual);
 
     // Nobody can capture EP
@@ -764,7 +772,8 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
         actual,
         p,
         pushMask,
-        captureMask);
+        captureMask,
+        pinned);
     ASSERT_EQ(expected, actual);
 
     // Only 1 pawn can capture east EP 
@@ -779,7 +788,8 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
         actual,
         p,
         pushMask,
-        captureMask);
+        captureMask,
+        pinned);
     ASSERT_EQ(expected, actual);
 
     // Only 1 pawn can capture west EP 
@@ -794,7 +804,8 @@ TEST(move_generator_test, move_generator_populatePawnEnPassantMoves_test) {
         actual,
         p,
         pushMask,
-        captureMask);
+        captureMask,
+        pinned);
     ASSERT_EQ(expected, actual);
 }
 
@@ -803,6 +814,7 @@ TEST(move_generator_test, move_generator_populateKnightMoves_test) {
 
     Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
     Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pinned = Bitboard();
 
     // White knights in corner, side, and middle, quiet, capture, and blocked by own pieces
     Position p = Position("N3r1k1/2P3N1/1P1N2b1/1b3R2/2P4N/1b6/5P2/NK5N w - - 0 1");
@@ -829,7 +841,7 @@ TEST(move_generator_test, move_generator_populateKnightMoves_test) {
     };
 
     std::vector<Move> actual;
-    m.populateKnightMoves(actual, p, pushMask, captureMask);
+    m.populateKnightMoves(actual, p, pushMask, captureMask, pinned);
     ASSERT_EQ(expected, actual);
 
     // Black knights in corner, side, and middle, quiet, capture, and blocked by own pieces
@@ -858,6 +870,674 @@ TEST(move_generator_test, move_generator_populateKnightMoves_test) {
     };
 
     actual.clear();
-    m.populateKnightMoves(actual, p, pushMask, captureMask);
+    m.populateKnightMoves(actual, p, pushMask, captureMask, pinned);
     ASSERT_EQ(expected, actual);
 }
+
+TEST(move_generator_test, move_generator_populateBishopMoves_test) {
+    MoveGenerator m;
+
+    Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pinned = Bitboard();
+
+    // White bishops in corner, side, and middle, quiet, capture, and blocked by own pieces
+    Position p = Position("pk5B/1p6/B4N1r/6n1/2NR3B/2b1B3/8/B1n3KB w - - 0 1");
+    std::vector<Move> expected = {
+        Move(A1, C3, Move::MoveType::capture),
+        Move(A1, B2, Move::MoveType::quiet),
+
+        Move(H1, B7, Move::MoveType::capture),
+        Move(H1, G2, Move::MoveType::quiet),
+        Move(H1, F3, Move::MoveType::quiet),
+        Move(H1, E4, Move::MoveType::quiet),
+        Move(H1, D5, Move::MoveType::quiet),
+        Move(H1, C6, Move::MoveType::quiet),
+        
+        Move(E3, C1, Move::MoveType::capture),
+        Move(E3, G5, Move::MoveType::capture),
+        Move(E3, D2, Move::MoveType::quiet),
+        Move(E3, F2, Move::MoveType::quiet),
+        Move(E3, F4, Move::MoveType::quiet),
+
+        Move(H4, G5, Move::MoveType::capture),
+        Move(H4, E1, Move::MoveType::quiet),
+        Move(H4, F2, Move::MoveType::quiet),
+        Move(H4, G3, Move::MoveType::quiet),
+
+        Move(A6, B7, Move::MoveType::capture),
+        Move(A6, B5, Move::MoveType::quiet),
+
+        Move(H8, G7, Move::MoveType::quiet),
+    };
+
+    std::vector<Move> actual;
+    m.populateBishopMoves(actual, p, pushMask, captureMask, pinned);
+    ASSERT_EQ(expected, actual);
+
+    // Black bishops in corner, side, and middle, quiet, capture, and blocked by own pieces
+    p = Position("b2Kb2b/4RP2/2n5/2b3b1/5r1Q/2P1n3/1q6/B5k1 b - - 0 1");
+    expected.clear();
+    expected = {
+        Move(C5, E7, Move::MoveType::capture),
+        Move(C5, A3, Move::MoveType::quiet),
+        Move(C5, B4, Move::MoveType::quiet),
+        Move(C5, D4, Move::MoveType::quiet),
+        Move(C5, B6, Move::MoveType::quiet),
+        Move(C5, D6, Move::MoveType::quiet),
+        Move(C5, A7, Move::MoveType::quiet),
+
+        Move(G5, H4, Move::MoveType::capture),
+        Move(G5, E7, Move::MoveType::capture),
+        Move(G5, F6, Move::MoveType::quiet),
+        Move(G5, H6, Move::MoveType::quiet),
+
+        Move(A8, B7, Move::MoveType::quiet),
+
+        Move(E8, F7, Move::MoveType::capture),
+        Move(E8, D7, Move::MoveType::quiet),
+        
+        Move(H8, C3, Move::MoveType::capture),
+        Move(H8, D4, Move::MoveType::quiet),
+        Move(H8, E5, Move::MoveType::quiet),
+        Move(H8, F6, Move::MoveType::quiet),
+        Move(H8, G7, Move::MoveType::quiet),
+    };
+
+    actual.clear();
+    m.populateBishopMoves(actual, p, pushMask, captureMask, pinned);
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(move_generator_test, move_generator_populateRookMoves_test) {
+    MoveGenerator m;
+
+    Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pinned = Bitboard();
+
+    // White rooks in corner, side, and middle, captures, pushes and blocked by white pieces
+    Position p = Position("3b1RR1/5B2/N7/3R1nk1/8/3B4/1K6/R1n1q3 w - - 0 1");
+    std::vector<Move> expected = {
+        Move(A1, C1, Move::MoveType::capture),
+        Move(A1, B1, Move::MoveType::quiet),
+        Move(A1, A2, Move::MoveType::quiet),
+        Move(A1, A3, Move::MoveType::quiet),
+        Move(A1, A4, Move::MoveType::quiet),
+        Move(A1, A5, Move::MoveType::quiet),
+
+        Move(D5, F5, Move::MoveType::capture),
+        Move(D5, D8, Move::MoveType::capture),
+        Move(D5, D4, Move::MoveType::quiet),
+        Move(D5, A5, Move::MoveType::quiet),
+        Move(D5, B5, Move::MoveType::quiet),
+        Move(D5, C5, Move::MoveType::quiet),
+        Move(D5, E5, Move::MoveType::quiet),
+        Move(D5, D6, Move::MoveType::quiet),
+        Move(D5, D7, Move::MoveType::quiet),
+      
+        Move(F8, D8, Move::MoveType::capture),
+        Move(F8, E8, Move::MoveType::quiet),
+
+        Move(G8, G5, Move::MoveType::capture),
+        Move(G8, G6, Move::MoveType::quiet),
+        Move(G8, G7, Move::MoveType::quiet),
+        Move(G8, H8, Move::MoveType::quiet),
+    };
+
+    std::vector<Move> actual;
+    m.populateRookMoves(actual, p, pushMask, captureMask, pinned);
+    ASSERT_EQ(expected, actual);
+
+    // Black rooks on corner, side, and middle, captures, pushes, and blocked by black
+    p = Position("3r2k1/1B6/1r2n3/1B2R3/3QrP2/4P3/p7/rnKNR2r b - - 0 1");
+    expected.clear();
+    expected = {
+        Move(H1, E1, Move::MoveType::capture),
+        Move(H1, F1, Move::MoveType::quiet),
+        Move(H1, G1, Move::MoveType::quiet),
+        Move(H1, H2, Move::MoveType::quiet),
+        Move(H1, H3, Move::MoveType::quiet),
+        Move(H1, H4, Move::MoveType::quiet),
+        Move(H1, H5, Move::MoveType::quiet),
+        Move(H1, H6, Move::MoveType::quiet),
+        Move(H1, H7, Move::MoveType::quiet),
+        Move(H1, H8, Move::MoveType::quiet),
+
+        Move(E4, E3, Move::MoveType::capture),
+        Move(E4, D4, Move::MoveType::capture),
+        Move(E4, F4, Move::MoveType::capture),
+        Move(E4, E5, Move::MoveType::capture),
+
+        Move(B6, B5, Move::MoveType::capture),
+        Move(B6, B7, Move::MoveType::capture),
+        Move(B6, A6, Move::MoveType::quiet),
+        Move(B6, C6, Move::MoveType::quiet),
+        Move(B6, D6, Move::MoveType::quiet),
+
+        Move(D8, D4, Move::MoveType::capture),
+        Move(D8, D5, Move::MoveType::quiet),
+        Move(D8, D6, Move::MoveType::quiet),
+        Move(D8, D7, Move::MoveType::quiet),
+        Move(D8, A8, Move::MoveType::quiet),
+        Move(D8, B8, Move::MoveType::quiet),
+        Move(D8, C8, Move::MoveType::quiet),
+        Move(D8, E8, Move::MoveType::quiet),
+        Move(D8, F8, Move::MoveType::quiet),
+    };
+
+    actual.clear();
+    m.populateRookMoves(actual, p, pushMask, captureMask, pinned);
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(move_generator_test, move_generator_populateQueenMoves_test) {
+    MoveGenerator m;
+
+    Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pinned = Bitboard();
+
+    // White queens in corner, side, and middle, pushes, captures, and blocked by white pieces
+    Position p = Position("k5B1/3q4/1pN1Q3/B3b3/3n3R/6rQ/8/Q1p1R2K w - - 0 1");
+    std::vector<Move> expected = {
+        Move(A1, C1, Move::MoveType::capture),
+        Move(A1, D4, Move::MoveType::capture),
+        Move(A1, B1, Move::MoveType::quiet),
+        Move(A1, A2, Move::MoveType::quiet),
+        Move(A1, B2, Move::MoveType::quiet),
+        Move(A1, A3, Move::MoveType::quiet),
+        Move(A1, C3, Move::MoveType::quiet),
+        Move(A1, A4, Move::MoveType::quiet),
+
+        Move(H3, G3, Move::MoveType::capture),
+        Move(H3, F1, Move::MoveType::quiet),
+        Move(H3, G2, Move::MoveType::quiet),
+        Move(H3, H2, Move::MoveType::quiet),
+        Move(H3, G4, Move::MoveType::quiet),
+        Move(H3, F5, Move::MoveType::quiet),
+
+        Move(E6, E5, Move::MoveType::capture),
+        Move(E6, D7, Move::MoveType::capture),
+        Move(E6, A2, Move::MoveType::quiet),
+        Move(E6, B3, Move::MoveType::quiet),
+        Move(E6, C4, Move::MoveType::quiet),
+        Move(E6, G4, Move::MoveType::quiet),
+        Move(E6, D5, Move::MoveType::quiet),
+        Move(E6, F5, Move::MoveType::quiet),
+        Move(E6, D6, Move::MoveType::quiet),
+        Move(E6, F6, Move::MoveType::quiet),
+        Move(E6, G6, Move::MoveType::quiet),
+        Move(E6, H6, Move::MoveType::quiet),
+        Move(E6, E7, Move::MoveType::quiet),
+        Move(E6, F7, Move::MoveType::quiet),
+        Move(E6, E8, Move::MoveType::quiet),
+    };
+    std::vector<Move> actual;
+    m.populateQueenMoves(actual, p, pushMask, captureMask, pinned);
+
+    ASSERT_EQ(expected, actual);
+
+    // Black queens in corner, side, and middle, pushes, captures, and blocked by black pieces
+    p = Position("qnk1NR1q/pp6/5B2/p3b3/1q2b2P/1Qp3P1/8/K2Nq3 b - - 0 1");
+    expected.clear();
+    expected = {
+        Move(E1, D1, Move::MoveType::capture),
+        Move(E1, G3, Move::MoveType::capture),
+        Move(E1, F1, Move::MoveType::quiet),
+        Move(E1, G1, Move::MoveType::quiet),
+        Move(E1, H1, Move::MoveType::quiet),
+        Move(E1, D2, Move::MoveType::quiet),
+        Move(E1, E2, Move::MoveType::quiet),
+        Move(E1, F2, Move::MoveType::quiet),
+        Move(E1, E3, Move::MoveType::quiet),
+
+        Move(B4, B3, Move::MoveType::capture),
+        Move(B4, F8, Move::MoveType::capture),
+        Move(B4, A3, Move::MoveType::quiet),
+        Move(B4, A4, Move::MoveType::quiet),
+        Move(B4, C4, Move::MoveType::quiet),
+        Move(B4, D4, Move::MoveType::quiet),
+        Move(B4, B5, Move::MoveType::quiet),
+        Move(B4, C5, Move::MoveType::quiet),
+        Move(B4, B6, Move::MoveType::quiet),
+        Move(B4, D6, Move::MoveType::quiet),
+        Move(B4, E7, Move::MoveType::quiet),
+
+        Move(H8, H4, Move::MoveType::capture),
+        Move(H8, F6, Move::MoveType::capture),
+        Move(H8, F8, Move::MoveType::capture),
+        Move(H8, H5, Move::MoveType::quiet),
+        Move(H8, H6, Move::MoveType::quiet),
+        Move(H8, G7, Move::MoveType::quiet),
+        Move(H8, H7, Move::MoveType::quiet),
+        Move(H8, G8, Move::MoveType::quiet),
+    };
+    actual.clear();
+    m.populateQueenMoves(actual, p, pushMask, captureMask, pinned);
+
+    ASSERT_EQ(expected, actual);
+}
+
+TEST(move_generator_test, move_generator_populateKingCastlingMoves_white_test) {
+    MoveGenerator m;
+
+    std::vector<Position> wKingCastleBothSides = {
+        Position("1k6/1r5r/8/8/8/8/8/R3K2R w KQ - 0 1"),
+        Position("1k6/8/8/8/b1rb2r1/8/1PP2PP1/R3K2R w KQ - 0 1"),
+        Position("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1"),
+    };
+    std::vector<Position> wKingCastleKS = {
+        Position("4k3/8/8/8/2r5/8/8/R3K2R w KQ - 0 1"),
+        Position("4k3/8/8/8/q1r5/8/8/R3K2R w KQ - 0 1"),
+        Position("4k3/8/8/8/8/8/8/R1b1K2R w KQ - 0 1"),
+        Position("4k3/8/8/8/8/8/8/R2nK2R w KQ - 0 1"),
+        Position("4k3/8/8/8/8/8/8/RQ2K2R w KQ - 0 1"),
+        Position("4k3/8/8/8/8/8/8/R3K2R w K - 0 1")
+    };
+    std::vector<Position> wKingCastleQS = {
+        Position("4k3/8/8/8/2b3r1/8/8/R3K2R w KQ - 0 1"),
+        Position("4k1q1/8/8/8/8/8/8/R3K2R w KQ - 0 1"),
+        Position("4k3/8/b7/8/8/8/8/R3K2R w KQ - 0 1"),
+        Position("4k3/8/8/8/8/8/8/R3K1NR w KQ - 0 1"),
+        Position("4k3/8/8/8/8/8/8/R3Kn1R w KQ - 0 1"),
+        Position("4k3/8/8/8/8/8/8/R3K2R w Q - 0 1")
+    };  
+    std::vector<Position> wKingCastleNoSide = {
+        Position("1k6/7r/8/8/6r1/b7/8/R3K2R w KQ - 0 1"),
+        Position("1k6/8/8/5r1b/8/8/8/R3K2R w KQ - 0 1"),
+        Position("4k3/8/8/8/8/8/8/R3K2R w kq - 1 1"),
+        Position("4k3/8/8/8/8/8/8/Rb2Kn1R w KQ - 1 1"),
+        Position("4k3/8/8/8/8/8/8/RrNBKBbR w KQ - 1 1"),
+    };
+
+    std::vector<Move> expected = {
+        Move(E1, G1, Move::MoveType::kingCastle),
+        Move(E1, C1, Move::MoveType::queenCastle),
+    };
+    std::vector<Move> actual;
+    for (Position p : wKingCastleBothSides) {
+        actual.clear();
+        m.populateKingCastlingMoves(
+            actual, p, m.kingDangerSquares(p.pieceBitboards, p.occupied, p.colorToMove));
+        ASSERT_EQ(expected, actual);
+    }
+
+    expected = {
+        Move(E1, G1, Move::MoveType::kingCastle),
+    };
+    for (Position p : wKingCastleKS) {
+        actual.clear();
+        m.populateKingCastlingMoves(
+            actual, p, m.kingDangerSquares(p.pieceBitboards, p.occupied, p.colorToMove));
+        ASSERT_EQ(expected, actual);
+    }
+
+    expected = {
+        Move(E1, C1, Move::MoveType::queenCastle),
+    };
+    for (Position p : wKingCastleQS) {
+        actual.clear();
+        m.populateKingCastlingMoves(
+            actual, p, m.kingDangerSquares(p.pieceBitboards, p.occupied, p.colorToMove));
+        ASSERT_EQ(expected, actual);
+    }
+
+    expected.clear();
+    for (Position p : wKingCastleNoSide) {
+        actual.clear();
+        m.populateKingCastlingMoves(
+            actual, p, m.kingDangerSquares(p.pieceBitboards, p.occupied, p.colorToMove));
+        ASSERT_EQ(expected, actual);
+    }
+}
+
+TEST(move_generator_test, move_generator_populateKingCastlingMoves_black_test) {
+    MoveGenerator m;
+
+    std::vector<Position> bKingCastleBothSides = {
+        Position("r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1"),
+        Position("r3k2r/8/8/8/8/8/1R6/4K3 b kq - 0 1"),
+        Position("r3k2r/2ppbpp1/8/2Q2B2/8/1R6/8/4K3 b kq - 0 1"),
+    };
+    std::vector<Position> bKingCastleKS = {
+        Position("r3k2r/8/8/5B2/8/1R6/8/4K3 b kq - 0 1"),
+        Position("r3k2r/8/8/5B2/8/3R4/8/4K3 b kq - 0 1"),
+        Position("r3k2r/8/8/8/8/3Q4/8/4K3 b kq - 0 1"),
+        Position("rq2k2r/8/8/8/8/8/8/4K3 b kq - 0 1"),
+        Position("rN1bk2r/8/8/8/8/8/8/4K3 b kq - 0 1")
+    };
+    std::vector<Position> bKingCastleQS = {
+        Position("r3k2r/8/8/8/6R1/8/8/4K3 b kq - 0 1"),
+        Position("r3k2r/8/8/8/1B6/8/8/4K3 b kq - 0 1"),
+        Position("r3k2r/8/8/R7/1B6/8/8/4K3 b kq - 0 1"),
+        Position("r3k1br/8/8/8/8/8/8/4K3 b kq - 0 1"),
+        Position("r3kN1r/8/8/8/8/8/8/4K3 b kq - 0 1"),
+    };  
+    std::vector<Position> bKingCastleNoSide = {
+        Position("rbB1kNbr/8/8/8/8/8/8/4K3 b kq - 0 1"),
+        Position("r3k2r/8/8/2Q3R1/8/8/8/4K3 b kq - 0 1"),
+        Position("r3k2r/8/8/8/8/8/8/4K3 b KQ - 1 1"),
+    };
+
+    std::vector<Move> expected = {
+        Move(E8, G8, Move::MoveType::kingCastle),
+        Move(E8, C8, Move::MoveType::queenCastle),
+    };
+    std::vector<Move> actual;
+    for (Position p : bKingCastleBothSides) {
+        actual.clear();
+        m.populateKingCastlingMoves(
+            actual, p, m.kingDangerSquares(p.pieceBitboards, p.occupied, p.colorToMove));
+        ASSERT_EQ(expected, actual);
+    }
+
+    expected = {
+        Move(E8, G8, Move::MoveType::kingCastle),
+    };
+    for (Position p : bKingCastleKS) {
+        actual.clear();
+        m.populateKingCastlingMoves(
+            actual, p, m.kingDangerSquares(p.pieceBitboards, p.occupied, p.colorToMove));
+        ASSERT_EQ(expected, actual);
+    }
+
+    expected = {
+        Move(E8, C8, Move::MoveType::queenCastle),
+    };
+    for (Position p : bKingCastleQS) {
+        actual.clear();
+        m.populateKingCastlingMoves(
+            actual, p, m.kingDangerSquares(p.pieceBitboards, p.occupied, p.colorToMove));
+        ASSERT_EQ(expected, actual);
+    }
+
+    expected.clear();
+    for (Position p : bKingCastleNoSide) {
+        actual.clear();
+        m.populateKingCastlingMoves(
+            actual, p, m.kingDangerSquares(p.pieceBitboards, p.occupied, p.colorToMove));
+        ASSERT_EQ(expected, actual);
+    }
+}
+
+TEST(move_generator_test, move_generator_rayBetween_test) {
+    MoveGenerator m;
+
+    Square origin, target;
+    Bitboard expected;
+    origin = A1;
+    target = H8;
+    expected.set(std::vector<Square> {B2, C3, D4, E5, F6, G7});
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = A8;
+    target = H1;
+    expected.set(std::vector<Square> {B7, C6, D5, E4, F3, G2});
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = C1;
+    target = C8;
+    expected.set(std::vector<Square> {C2, C3, C4, C5, C6, C7});
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = A7;
+    target = H7;
+    expected.set(std::vector<Square> {B7, C7, D7, E7, F7, G7});
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = B4;
+    target = E7;
+    expected.set(std::vector<Square> {C5, D6});
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = G3;
+    target = C7;
+    expected.set(std::vector<Square> {F4, E5, D6});
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = D3;
+    target = F3;
+    expected.set(std::vector<Square> {E3});
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = E1;
+    target = E7;
+    expected.set(std::vector<Square> {E2, E3, E4, E5, E6});
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = B2;
+    target = D3;
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = E7;
+    target = F3;
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+
+    expected = Bitboard();
+    origin = D4;
+    target = D4;
+    ASSERT_EQ(m.rayBetween(origin, target), expected);
+    ASSERT_EQ(m.rayBetween(target, origin), expected);
+}
+
+TEST(move_generator_test, populateMoveList_test) {
+    // Example positions from https://peterellisjones.com/posts/generating-legal-chess-moves-efficiently/
+    MoveGenerator m;
+
+    Position p = Position("4k3/6N1/5b2/4R3/8/8/8/4K3 b - - 1 1");
+    std::vector<Move> expected {
+        Move(E8, D7, Move::MoveType::quiet),        
+        Move(E8, F7, Move::MoveType::quiet),
+        Move(E8, D8, Move::MoveType::quiet),
+        Move(E8, F8, Move::MoveType::quiet),
+    };
+    std::vector<Move> actual;
+    m.populateMoveList(actual, p);
+    ASSERT_EQ(actual, expected);
+
+    p = Position("4k3/8/6n1/4R3/8/8/8/4K3 b - - 1 1");
+    expected.clear();
+    expected = {
+        Move(E8, D7, Move::MoveType::quiet),        
+        Move(E8, F7, Move::MoveType::quiet),
+        Move(E8, D8, Move::MoveType::quiet),
+        Move(E8, F8, Move::MoveType::quiet),
+
+        Move(G6, E5, Move::MoveType::capture),
+        Move(G6, E7, Move::MoveType::quiet),
+    };
+    actual.clear();
+    m.populateMoveList(actual, p);
+    ASSERT_EQ(actual, expected);
+
+    p = Position("8/8/8/2k5/3Pp3/8/8/4K3 b - d3 0 1");
+    expected.clear();
+    expected = {
+        Move(C5, D4, Move::MoveType::capture),        
+        Move(C5, B4, Move::MoveType::quiet),
+        Move(C5, C4, Move::MoveType::quiet),
+        Move(C5, B5, Move::MoveType::quiet),
+        Move(C5, D5, Move::MoveType::quiet),
+        Move(C5, B6, Move::MoveType::quiet),
+        Move(C5, C6, Move::MoveType::quiet),
+        Move(C5, D6, Move::MoveType::quiet),
+
+        Move(E4, D3, Move::MoveType::epCapture),
+    };
+    actual.clear();
+    m.populateMoveList(actual, p);
+    ASSERT_EQ(actual, expected);
+
+    p = Position("8/8/8/1k6/3Pp3/8/8/4KQ2 b - d3 0 1");
+    expected.clear();
+    expected = {
+        Move(B5, A4, Move::MoveType::quiet),
+        Move(B5, B4, Move::MoveType::quiet),
+        Move(B5, A5, Move::MoveType::quiet),
+        Move(B5, B6, Move::MoveType::quiet),
+        Move(B5, C6, Move::MoveType::quiet),
+
+        Move(E4, D3, Move::MoveType::epCapture),
+    };
+    actual.clear();
+    m.populateMoveList(actual, p);
+    ASSERT_EQ(actual, expected);
+}
+
+TEST(move_generator_test, move_generator_populatePinnedPieceMoves_test) {
+    MoveGenerator m;
+
+    Bitboard captureMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+    Bitboard pushMask = Bitboard((uint64_t) 0xFFFFFFFFFFFFFFFF);
+
+    // Black pawn pushes, double pushes and captures
+    Position p = Position("2k5/2pp4/4B3/8/8/2R5/8/6K1 b - - 0 1");
+    std::vector<Move> expected = {
+        Move(C7, C5, Move::MoveType::doublePawnPush),
+        Move(C7, C6, Move::MoveType::quiet),
+        Move(D7, E6, Move::MoveType::capture),
+    };
+    Bitboard expectedPinned;
+    expectedPinned.set(std::vector<Square> {C7, D7});
+    std::vector<Move> actual;
+    Bitboard actualPinned = m.populatePinnedPieceMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(actual, expected);
+    ASSERT_EQ(actualPinned, expectedPinned);
+
+    //White pawn pushes and captures
+    p = Position("8/8/3r4/q7/1P6/3P4/3K1P1r/8 w - - 0 1");
+    expected.clear();
+    expected = {
+        Move(B4, A5, Move::MoveType::capture),
+        Move(D3, D4, Move::MoveType::quiet),
+    };
+    expectedPinned = Bitboard();
+    expectedPinned.set(std::vector<Square> {B4, D3, F2});
+    actual.clear();
+    actualPinned = m.populatePinnedPieceMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(actual, expected);
+    ASSERT_EQ(actualPinned, expectedPinned);
+
+    // Black EP Capture
+    p = Position("8/8/6k1/8/3Pp3/8/8/1Q5K b - d3 0 1");
+    expected.clear();
+    expected = {Move(E4, D3, Move::MoveType::epCapture)};
+    expectedPinned = Bitboard();
+    expectedPinned.set(std::vector<Square> {E4});
+    actual.clear();
+    actualPinned = m.populatePinnedPieceMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(actual, expected);
+    ASSERT_EQ(actualPinned, expectedPinned);
+
+    // White EP Capture
+    p = Position("2k5/6b1/8/4Pp2/8/8/1K6/8 w - f6 0 2");
+    expected.clear();
+    expected = {Move(E5, F6, Move::MoveType::epCapture)};
+    expectedPinned = Bitboard();
+    expectedPinned.set(std::vector<Square> {E5});
+    actual.clear();
+    actualPinned = m.populatePinnedPieceMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(actual, expected);
+    ASSERT_EQ(actualPinned, expectedPinned);
+
+    // Knights
+    p = Position("8/3k4/8/3n4/6n1/7B/8/3Q4 b - - 0 1");
+    expected.clear();
+    expectedPinned = Bitboard();
+    expectedPinned.set(std::vector<Square> {D5, G4});
+    actual.clear();
+    actualPinned = m.populatePinnedPieceMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(actual, expected);
+    ASSERT_EQ(actualPinned, expectedPinned);
+
+    // Bishops
+    p = Position("8/2r5/6q1/2B5/4B3/8/2K5/8 w - - 0 1");
+    expected.clear();
+    expected = {
+        Move(E4, G6, Move::MoveType::capture),
+        Move(E4, D3, Move::MoveType::quiet),
+        Move(E4, F5, Move::MoveType::quiet),
+    };
+    expectedPinned = Bitboard();
+    expectedPinned.set(std::vector<Square> {C5, E4});
+    actual.clear();
+    actualPinned = m.populatePinnedPieceMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(actual, expected);
+    ASSERT_EQ(actualPinned, expectedPinned);
+
+    // Rooks
+    p = Position("8/4Rrk1/8/3N2r1/3r4/6Q1/1Q6/4K3 b - - 0 1");
+    expected.clear();
+    expected = {
+        Move(G5, G3, Move::MoveType::capture),
+        Move(G5, G4, Move::MoveType::quiet),
+        Move(G5, G6, Move::MoveType::quiet),
+        Move(F7, E7, Move::MoveType::capture),
+    };
+    expectedPinned = Bitboard();
+    expectedPinned.set(std::vector<Square> {G5, F7, D4});
+    actual.clear();
+    actualPinned = m.populatePinnedPieceMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(actual, expected);
+    ASSERT_EQ(actualPinned, expectedPinned);
+
+    // Queen
+    p = Position("8/3r4/1q2b3/2QQ4/3K1Q1q/8/1Q3n2/b7 w - - 0 1");
+    expected.clear();
+    expected = {
+        Move(B2, A1, Move::MoveType::capture),
+        Move(B2, C3, Move::MoveType::quiet),
+        Move(F4, H4, Move::MoveType::capture),
+        Move(F4, E4, Move::MoveType::quiet),
+        Move(F4, G4, Move::MoveType::quiet),
+        Move(C5, B6, Move::MoveType::capture),
+        Move(D5, D7, Move::MoveType::capture),
+        Move(D5, D6, Move::MoveType::quiet),
+    };
+    expectedPinned = Bitboard();
+    expectedPinned.set(std::vector<Square> {B2, F4, C5, D5});
+    actual.clear();
+    actualPinned = m.populatePinnedPieceMoves(actual, p, pushMask, captureMask);
+    ASSERT_EQ(actual, expected);
+    ASSERT_EQ(actualPinned, expectedPinned);
+}
+
+TEST(move_generator_test, move_generator_populateMoveList_pinnedPieces_singleCheck_test) {
+    MoveGenerator m;
+    Position p = Position("4B1k1/b2r2q1/8/1pP1R3/2NK2Qq/8/5N2/6q1 w - b6 0 1");
+
+    std::vector<Move> expected = {
+        // King moves out of check
+        Move(D4, C3, Move::MoveType::quiet),
+        Move(D4, E3, Move::MoveType::quiet),
+        Move(D4, E4, Move::MoveType::quiet),
+        // Knight blocks check
+        Move(C4, D6, Move::MoveType::quiet),
+        // Bishop captures checker
+        Move(E8, D7, Move::MoveType::capture),
+    };
+    std::vector<Move> actual;
+    m.populateMoveList(actual, p);
+    ASSERT_EQ(actual, expected);
+}
+

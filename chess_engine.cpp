@@ -7,15 +7,14 @@
 //============================================================================
 
 #include <iostream>
-#include "src/position.h"
 #include "src/bitboard.h"
-#include "src/square.h"
+#include "src/move_generator.h"
 #include "src/piece.h"
+#include "src/position.h"
+#include "src/square.h"
+
 
 int main() {
-	Position p("r1bqkbnr/ppp1pppp/3p4/2nN4/4P3/6N1/PPPPKPPP/R1BQ1B1R b kq - 11 14");
-	p.occupied.print();
-	p.occupiedByColor[Color::black].print();
-	p.occupiedByColor[Color::white].print();
+	Position p("3k1n1R/8/5b2/8/3r3B/8/3Q4/3R2K1 b - - 0 1");
 	p.print();
 }

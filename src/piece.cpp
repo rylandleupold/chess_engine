@@ -5,6 +5,10 @@ const bool isWhite(Piece piece) {
     return (piece % 2 != 0);
 }
 
+const bool isSlider(Piece piece) {
+    return (piece >= Piece::blackBishop && piece <= Piece::whiteQueen);
+}
+
 std::ostream& operator<<(std::ostream& os, const Piece piece) {
     switch (piece) {
         case (Piece::whitePawn): return os << "P";

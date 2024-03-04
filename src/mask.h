@@ -12,6 +12,14 @@ enum Mask: uint64_t {
     NOT_RANK_8 = 0x00FFFFFFFFFFFFFF,
     FILE_A =     0x0101010101010101,
     FILE_H =     0x8080808080808080,
+    // For queenside castling
+    B1_TO_D1 =   0x000000000000000E,
+    C1_AND_D1 =  0x000000000000000C,
+    B8_TO_D8 =   0x0E00000000000000,
+    C8_AND_D8 =  0x0C00000000000000,
+    // For kingside castling
+    F1_AND_G1 =  0x0000000000000060,
+    F8_AND_G8 =  0x6000000000000000,
 };
 
 #endif

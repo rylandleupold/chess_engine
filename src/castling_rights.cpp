@@ -8,7 +8,7 @@ CastlingRights::CastlingRights(std::bitset<4> bits) {
     castlingBits = bits;
 }
 
-int CastlingRights::getCastlingBit(bool isWhite, bool isKingside) {
+int CastlingRights::getCastlingBit(bool isWhite, bool isKingside) const {
     // Castling bits = [ Black Queenside, Black Kingside, White Queenside, White Kingside ]
     int i = 0;
     if (isWhite) {
@@ -20,7 +20,7 @@ int CastlingRights::getCastlingBit(bool isWhite, bool isKingside) {
     return i;
 }
 
-bool CastlingRights::canCastle(bool isWhite, bool isKingside) {
+bool CastlingRights::canCastle(bool isWhite, bool isKingside) const {
     return castlingBits[getCastlingBit(isWhite, isKingside)];
 }
 

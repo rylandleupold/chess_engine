@@ -20,5 +20,6 @@ const char* pieceToString(Piece piece);
 const Piece charToPiece(char c);
 
 const bool isWhite(Piece piece);
+const bool isSlider(Piece piece);
 
 #endif

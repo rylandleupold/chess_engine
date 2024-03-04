@@ -18,3 +18,25 @@ TEST(piece_test, piece_isWhite_test) {
 
     ASSERT_FALSE(isWhite(Piece::noPiece));
 }
+
+TEST(piece_test, piece_isSlider_test) {
+    std::vector<Piece> slidingPieces = {
+        Piece::blackBishop, Piece::whiteBishop,
+        Piece::blackRook, Piece::whiteRook,
+        Piece::blackQueen, Piece::whiteQueen
+    };
+
+    std::vector<Piece> notSlidingPieces = {
+        Piece::blackPawn, Piece::whitePawn,
+        Piece::blackKnight, Piece::whiteKnight,
+        Piece::blackKing, Piece::whiteKing,
+        Piece::noPiece
+    };
+
+    for (Piece p : slidingPieces) {
+        ASSERT_TRUE(isSlider(p));
+    }
+    for (Piece p : notSlidingPieces) {
+        ASSERT_FALSE(isSlider(p));
+    }
+}

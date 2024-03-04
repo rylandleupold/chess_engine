@@ -6,11 +6,11 @@
 class CastlingRights {
 private:
     std::bitset<4> castlingBits;
-    int getCastlingBit(bool isWhite, bool isKingside);
+    int getCastlingBit(bool isWhite, bool isKingside) const;
 public:
     CastlingRights();
     CastlingRights(std::bitset<4> bits);
-    bool canCastle(bool isWhite, bool isKingside);
+    bool canCastle(bool isWhite, bool isKingside) const;
     void setCastlingRight(bool isWhite, bool isKingside);
     void unsetCastlingRight(bool isWhite, bool isKingside);
     std::string toString();

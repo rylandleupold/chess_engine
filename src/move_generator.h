@@ -15,10 +15,12 @@ private:
     std::array<Bitboard, 64> KNIGHT_MOVES;
     std::array<Bitboard, 64> KING_MOVES;
     std::array<std::array<Bitboard, 64>, 8> SLIDING_PIECE_MOVES;
+    std::array<std::array<Bitboard, 64>, 64> RAY_BEETWEN;
 
     void populateKnightMovesArray();
     void populateKingMovesArray();
     void populateSlidingPieceMovesArray();
+    void populateRayBetweenArray();
 public:
     MoveGenerator();
 
@@ -27,6 +29,9 @@ public:
     Bitboard bishopAttacks(Square origin, Bitboard occupied);
     Bitboard rookAttacks(Square origin, Bitboard occupied);
     Bitboard queenAttacks(Square origin, Bitboard occupied);
+    Bitboard xrayBishopAttacks(Square origin, Bitboard occupied, Bitboard blockers);
+    Bitboard xrayRookAttacks(Square origin, Bitboard occupied, Bitboard blockers);
+    Bitboard rayBetween(Square origin, Square target) const;
     Bitboard positiveRayAttacks(Square origin, Direction direction, Bitboard occupied);
     Bitboard negativeRayAttacks(Square origin, Direction direction, Bitboard occupied);
     Bitboard slidingPieceAttacks(Square origin, Direction direction);
@@ -36,6 +41,7 @@ public:
     Bitboard pawnPushes(Bitboard pawns, Color color, Bitboard occupied);
     Bitboard pawnDoublePushes(Bitboard pawns, Color color, Bitboard occupied);
     
+
     Bitboard attacksToKing(
         const std::array<Bitboard, 12>& pieceBitboards, 
         const Bitboard& occupied, 
@@ -50,20 +56,50 @@ public:
         std::vector<Move>& moveList,
         const Position& p,
         const Bitboard& dangerSquares);
+    void populateKingCastlingMoves(
+        std::vector<Move>& moveList,
+        const Position& p,
+        const Bitboard& dangerSquares);
     void populatePawnMoves(
         std::vector<Move>& moveList, 
         const Position& p,
         const Bitboard& pushMask, 
-        const Bitboard& captureMask);
+        const Bitboard& captureMask,
+        const Bitboard& pinned);
     void populatePawnEnPassantMoves(
         std::vector<Move>& moveList,
         const Position& p,
         const Bitboard& pushMask, 
-        const Bitboard& captureMask);
+        const Bitboard& captureMask,
+        const Bitboard& pinned);
     void populateKnightMoves(
         std::vector<Move>& moveList,
         const Position& p, 
         const Bitboard& pushMask, 
+        const Bitboard& captureMask,
+        const Bitboard& pinned);
+    void populateBishopMoves(
+        std::vector<Move>& moveList,
+        const Position& p,
+        const Bitboard& pushMask,
+        const Bitboard& captureMask,
+        const Bitboard& pinned);
+    void populateRookMoves(
+        std::vector<Move>& moveList,
+        const Position& p,
+        const Bitboard& pushMask,
+        const Bitboard& captureMask,
+        const Bitboard& pinned);
+    void populateQueenMoves(
+        std::vector<Move>& moveList,
+        const Position& p,
+        const Bitboard& pushMask,
+        const Bitboard& captureMask,
+        const Bitboard& pinned);
+    Bitboard populatePinnedPieceMoves(
+        std::vector<Move>& moveList,
+        const Position& p,
+        const Bitboard& pushMask,
         const Bitboard& captureMask);
 };
 
