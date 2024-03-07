@@ -20,3 +20,22 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 add_test(NAME bitboard_test COMMAND ${PROJECT_NAME})
+add_test(NAME castling_rights_test COMMAND ${PROJECT_NAME})
+add_test(NAME fen_parser_test COMMAND ${PROJECT_NAME})
+add_test(NAME move_generator_test COMMAND ${PROJECT_NAME})
+add_test(NAME move_test COMMAND ${PROJECT_NAME})
+add_test(NAME piece_test COMMAND ${PROJECT_NAME})
+add_test(NAME position_test COMMAND ${PROJECT_NAME})
+
+project(ChessEnginePerftTests VERSION 1.0)
+
+set(ChessEnginePerftTests_src
+    perft_test.cpp
+)
+
+add_executable(ChessEnginePerftTests ${ChessEnginePerftTests_src})
+
+target_link_libraries(ChessEnginePerftTests
+    ChessEngineLib
+    gtest_main
+) 

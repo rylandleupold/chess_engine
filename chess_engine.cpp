@@ -15,6 +15,12 @@
 
 
 int main() {
-	Position p("3k1n1R/8/5b2/8/3r3B/8/3Q4/3R2K1 b - - 0 1");
-	p.print();
+    Position position3 = Position("rnb2k1r/pp1Pbppp/2p5/q7/P1B5/8/1PP1NnPP/RNBQK2R w KQ - 1 9");
+	position3.print();
+	std::vector<Move> moveList;
+	MoveGenerator mg;
+	mg.populateMoveList(moveList, position3);
+	for (Move move : moveList) {
+		std::cout << move.toString() << "\n";
+	}
 }

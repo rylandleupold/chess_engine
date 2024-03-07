@@ -89,15 +89,15 @@ void MoveGenerator::populateRayBetweenArray() {
     }
 }
 
-Bitboard MoveGenerator::kingAttacks(Square origin) {
+Bitboard MoveGenerator::kingAttacks(Square origin) const {
     return KING_MOVES[origin];
 }
 
-Bitboard MoveGenerator::knightAttacks(Square origin) {
+Bitboard MoveGenerator::knightAttacks(Square origin) const {
     return KNIGHT_MOVES[origin];
 }
 
-Bitboard MoveGenerator::bishopAttacks(Square origin, Bitboard occupied) {
+Bitboard MoveGenerator::bishopAttacks(Square origin, Bitboard occupied) const {
     Bitboard targets;
     for (Direction direction : DIAGONAL_POSITIVE_DIRECTIONS) {
         targets |= positiveRayAttacks(origin, direction, occupied);
@@ -108,7 +108,7 @@ Bitboard MoveGenerator::bishopAttacks(Square origin, Bitboard occupied) {
     return targets;
 }
 
-Bitboard MoveGenerator::rookAttacks(Square origin, Bitboard occupied) {
+Bitboard MoveGenerator::rookAttacks(Square origin, Bitboard occupied) const {
     Bitboard targets;
     for (Direction direction : STRAIGHT_POSITIVE_DIRECTIONS) {
         targets |= positiveRayAttacks(origin, direction, occupied);
@@ -119,7 +119,7 @@ Bitboard MoveGenerator::rookAttacks(Square origin, Bitboard occupied) {
     return targets;
 }
 
-Bitboard MoveGenerator::queenAttacks(Square origin, Bitboard occupied) {
+Bitboard MoveGenerator::queenAttacks(Square origin, Bitboard occupied) const {
     Bitboard targets;
     for (Direction direction : ALL_POSITIVE_DIRECTIONS) {
         targets |= positiveRayAttacks(origin, direction, occupied);
@@ -130,20 +130,20 @@ Bitboard MoveGenerator::queenAttacks(Square origin, Bitboard occupied) {
     return targets;
 }
 
-Bitboard MoveGenerator::xrayBishopAttacks(Square origin, Bitboard occupied, Bitboard blockers) {
+Bitboard MoveGenerator::xrayBishopAttacks(Square origin, Bitboard occupied, Bitboard blockers) const {
     Bitboard attacks = bishopAttacks(origin, occupied);
     blockers &= attacks;
     return attacks ^ bishopAttacks(origin, occupied ^ blockers);
 }
 
-Bitboard MoveGenerator::xrayRookAttacks(Square origin, Bitboard occupied, Bitboard blockers) {
+Bitboard MoveGenerator::xrayRookAttacks(Square origin, Bitboard occupied, Bitboard blockers) const {
     Bitboard attacks = rookAttacks(origin, occupied);
     blockers &= attacks;
     return attacks ^ rookAttacks(origin, occupied ^ blockers);
 }
 
 
-Bitboard MoveGenerator::positiveRayAttacks(Square origin, Direction direction, Bitboard occupied) {
+Bitboard MoveGenerator::positiveRayAttacks(Square origin, Direction direction, Bitboard occupied) const {
     Bitboard targets = slidingPieceAttacks(origin, direction);
     Bitboard blockers = targets & occupied;
     if (!blockers.isEmpty()) {
@@ -153,7 +153,7 @@ Bitboard MoveGenerator::positiveRayAttacks(Square origin, Direction direction, B
     return targets;
 }
 
-Bitboard MoveGenerator::negativeRayAttacks(Square origin, Direction direction, Bitboard occupied) {
+Bitboard MoveGenerator::negativeRayAttacks(Square origin, Direction direction, Bitboard occupied) const {
     Bitboard targets = slidingPieceAttacks(origin, direction);
     Bitboard blockers = targets & occupied;
     if (!blockers.isEmpty()) {
@@ -167,25 +167,25 @@ Bitboard MoveGenerator::rayBetween(Square origin, Square target) const {
     return RAY_BEETWEN[origin][target];
 }
 
-Bitboard MoveGenerator::slidingPieceAttacks(Square origin, Direction direction) {
+Bitboard MoveGenerator::slidingPieceAttacks(Square origin, Direction direction)  const{
     return SLIDING_PIECE_MOVES[direction][origin];
 }
 
-Bitboard MoveGenerator::pawnCapturesWest(Bitboard pawns, Color color) {
+Bitboard MoveGenerator::pawnCapturesWest(Bitboard pawns, Color color) const {
     return color == Color::black ? pawns.shiftSW() : pawns.shiftNW();
 }
 
-Bitboard MoveGenerator::pawnCapturesEast(Bitboard pawns, Color color) {
+Bitboard MoveGenerator::pawnCapturesEast(Bitboard pawns, Color color) const {
     return color == Color::black ? pawns.shiftSE() : pawns.shiftNE();
 }
 
-Bitboard MoveGenerator::pawnCaptures(Bitboard pawns, Color color) {
+Bitboard MoveGenerator::pawnCaptures(Bitboard pawns, Color color) const {
     return color == Color::black 
         ? (pawns.shiftSE() | pawns.shiftSW())
         : (pawns.shiftNE() | pawns.shiftNW());
 }
 
-Bitboard MoveGenerator::pawnPushes(Bitboard pawns, Color color, Bitboard occupied) {
+Bitboard MoveGenerator::pawnPushes(Bitboard pawns, Color color, Bitboard occupied) const {
     if (color == Color::black) {
         return (pawns.shiftS() & ~occupied);
     } else {
@@ -193,7 +193,7 @@ Bitboard MoveGenerator::pawnPushes(Bitboard pawns, Color color, Bitboard occupie
     }
 } 
 
-Bitboard MoveGenerator::pawnDoublePushes(Bitboard pawns, Color color, Bitboard occupied) {
+Bitboard MoveGenerator::pawnDoublePushes(Bitboard pawns, Color color, Bitboard occupied) const {
     Bitboard singlePushes;
     if (color == Color::black) {
         singlePushes = (pawns.shiftS() & ~occupied);
@@ -207,7 +207,7 @@ Bitboard MoveGenerator::pawnDoublePushes(Bitboard pawns, Color color, Bitboard o
 Bitboard MoveGenerator::attacksToKing(
         const std::array<Bitboard, 12>& pieceBitboards,
         const Bitboard& occupied, 
-        Color kingColor) {
+        Color kingColor) const {
     Square kingSquare = pieceBitboards[Piece::blackKing + kingColor].lsb();
 	Bitboard opPawns = pieceBitboards[Piece::whitePawn - kingColor];
 	Bitboard opKnights = pieceBitboards[Piece::whiteKnight - kingColor];
@@ -225,7 +225,7 @@ Bitboard MoveGenerator::attacksToKing(
 Bitboard MoveGenerator::kingDangerSquares(
         const std::array<Bitboard, 12>& pieceBitboards, 
         const Bitboard& occupied,
-        Color kingColor) {
+        Color kingColor) const {
     Bitboard occupiedKingRemoved = occupied;
     occupiedKingRemoved.unset(pieceBitboards[Piece::blackKing + kingColor].lsb());
     Bitboard dangerSquares;
@@ -249,7 +249,7 @@ Bitboard MoveGenerator::kingDangerSquares(
     return dangerSquares;
 }
 
-void MoveGenerator::populateMoveList(std::vector<Move>& moveList, const Position& p) {
+void MoveGenerator::populateMoveList(std::vector<Move>& moveList, const Position& p) const {
     // Remove old moves
     moveList.clear();
 
@@ -287,7 +287,9 @@ void MoveGenerator::populateMoveList(std::vector<Move>& moveList, const Position
     Bitboard pinned = populatePinnedPieceMoves(moveList, p, pushMask, captureMask);
 
     // Not in check, generate all moves (castling is only legal when not in check)
-    populateKingCastlingMoves(moveList, p, dangerSquares);
+    if (numCheckers <= 0) {
+        populateKingCastlingMoves(moveList, p, dangerSquares);
+    }
     populatePawnMoves(moveList, p, pushMask, captureMask, pinned);
     populatePawnEnPassantMoves(moveList, p, pushMask, captureMask, pinned);
     populateKnightMoves(moveList, p, pushMask, captureMask, pinned);
@@ -300,7 +302,7 @@ void MoveGenerator::populateMoveList(std::vector<Move>& moveList, const Position
 void MoveGenerator::populateKingMoves(
         std::vector<Move>& moveList,
         const Position& p,
-        const Bitboard& dangerSquares) {
+        const Bitboard& dangerSquares) const {
     Square kingSquare = p.pieceBitboards[Piece::blackKing + p.colorToMove].lsb();
     Bitboard attacks = (kingAttacks(kingSquare) & ~dangerSquares);
     Bitboard captures = attacks & p.occupiedByColor[Color::white - p.colorToMove];
@@ -321,7 +323,7 @@ void MoveGenerator::populateKingMoves(
 void MoveGenerator::populateKingCastlingMoves(
         std::vector<Move>& moveList,
         const Position& p,
-        const Bitboard& dangerSquares) {
+        const Bitboard& dangerSquares) const {
     // If the king has castling right and squares b/w king and rook are not occupied and not attacked, then you can castle
     if (p.colorToMove == Color::white) {
         if (p.castlingRights.canCastle(true, true) 
@@ -353,7 +355,7 @@ void MoveGenerator::populatePawnMoves(
         const Position& p,
         const Bitboard& pushMask, 
         const Bitboard& captureMask,
-        const Bitboard& pinned) {
+        const Bitboard& pinned) const {
     Color colorToMove = p.colorToMove;
     Bitboard pawnBitboard = p.pieceBitboards[Piece::blackPawn + colorToMove] & ~pinned;
     Bitboard opPieces = p.occupiedByColor[Color::white - colorToMove];
@@ -438,28 +440,46 @@ void MoveGenerator::populatePawnEnPassantMoves(
         const Position& p,
         const Bitboard& pushMask, 
         const Bitboard& captureMask,
-        const Bitboard& pinned) {
+        const Bitboard& pinned) const {
     Square epTargetSquare = p.enPassantTarget;
     Color colorToMove = p.colorToMove;
     Bitboard pawnBitboard = p.pieceBitboards[Piece::blackPawn + colorToMove] & ~pinned;
     if (epTargetSquare == Square::noSquare) {
         return;
     }
-    Square eastOrigin, westOrigin, epPawnSquare;
+    Bitboard eastOrigin, westOrigin, kingMask;
+    Square epPawnSquare;
     if (colorToMove == Color::white) {
-        eastOrigin = Square(epTargetSquare - 9);
-        westOrigin = Square(epTargetSquare - 7);
+        eastOrigin = Bitboard(epTargetSquare).shiftSW();
+        westOrigin = Bitboard(epTargetSquare).shiftSE();
         epPawnSquare = Square(epTargetSquare - 8);
+        kingMask = Mask::RANK_5;
     } else {
-        eastOrigin = Square(epTargetSquare + 7);
-        westOrigin = Square(epTargetSquare + 9);
+        eastOrigin = Bitboard(epTargetSquare).shiftNW();
+        westOrigin = Bitboard(epTargetSquare).shiftNE();
         epPawnSquare = Square(epTargetSquare + 8);
+        kingMask = Mask::RANK_4;
     }
-    if (pawnBitboard.isSet(eastOrigin) && (captureMask.isSet(epPawnSquare) || pushMask.isSet(epTargetSquare))) {
-        moveList.push_back(Move(eastOrigin, epTargetSquare, Move::MoveType::epCapture));
+    Bitboard xrayAttacksToKing;
+    Bitboard kingBitboard = p.pieceBitboards[Piece::blackKing + colorToMove];
+    Bitboard opRQ = p.pieceBitboards[Piece::whiteRook - colorToMove] | p.pieceBitboards[Piece::whiteQueen - colorToMove];
+    if (!(pawnBitboard & eastOrigin).isEmpty() && (captureMask.isSet(epPawnSquare) || pushMask.isSet(epTargetSquare))) {
+        Bitboard occupiedWithoutpawns = p.occupied;
+        occupiedWithoutpawns.unset(epPawnSquare);
+        occupiedWithoutpawns.unset(eastOrigin.lsb());
+        xrayAttacksToKing = (positiveRayAttacks(kingBitboard.lsb(), Direction::East, occupiedWithoutpawns) | negativeRayAttacks(kingBitboard.lsb(), Direction::West, occupiedWithoutpawns)) & opRQ;
+        if (xrayAttacksToKing.isEmpty() || (kingBitboard & kingMask).isEmpty()) {
+            moveList.push_back(Move(eastOrigin.lsb(), epTargetSquare, Move::MoveType::epCapture));
+        }
     }
-    if (pawnBitboard.isSet(westOrigin) && (captureMask.isSet(epPawnSquare) || pushMask.isSet(epTargetSquare))) {
-        moveList.push_back(Move(westOrigin, epTargetSquare, Move::MoveType::epCapture));
+    if (!(pawnBitboard & westOrigin).isEmpty() && (captureMask.isSet(epPawnSquare) || pushMask.isSet(epTargetSquare))) {
+        Bitboard occupiedWithoutpawns = p.occupied;
+        occupiedWithoutpawns.unset(epPawnSquare);
+        occupiedWithoutpawns.unset(westOrigin.lsb());
+        xrayAttacksToKing = (positiveRayAttacks(kingBitboard.lsb(), Direction::East, occupiedWithoutpawns) | negativeRayAttacks(kingBitboard.lsb(), Direction::West, occupiedWithoutpawns)) & opRQ;
+        if (xrayAttacksToKing.isEmpty() || (kingBitboard & kingMask).isEmpty()) {
+            moveList.push_back(Move(westOrigin.lsb(), epTargetSquare, Move::MoveType::epCapture));
+        }
     }
 }
 
@@ -468,7 +488,7 @@ void MoveGenerator::populateKnightMoves(
         const Position& p, 
         const Bitboard& pushMask, 
         const Bitboard& captureMask,
-        const Bitboard& pinned) {
+        const Bitboard& pinned) const {
     Bitboard knightBitboard = p.pieceBitboards[Piece::blackKnight + p.colorToMove] & ~pinned;
     Bitboard opPieces = p.occupiedByColor[Color::white - p.colorToMove];
     Bitboard targets, captures, pushes;
@@ -497,7 +517,7 @@ void MoveGenerator::populateBishopMoves(
         const Position& p,
         const Bitboard& pushMask,
         const Bitboard& captureMask,
-        const Bitboard& pinned) {
+        const Bitboard& pinned) const {
     Bitboard bishopBitboard = p.pieceBitboards[Piece::blackBishop + p.colorToMove] & ~pinned;
     Bitboard opPieces = p.occupiedByColor[Color::white - p.colorToMove];
     Bitboard targets, captures, pushes;
@@ -526,7 +546,7 @@ void MoveGenerator::populateRookMoves(
         const Position& p,
         const Bitboard& pushMask,
         const Bitboard& captureMask,
-        const Bitboard& pinned) {
+        const Bitboard& pinned) const {
     Bitboard rookBitboard = p.pieceBitboards[Piece::blackRook + p.colorToMove] & ~pinned;
     Bitboard opPieces = p.occupiedByColor[Color::white - p.colorToMove];
     Bitboard targets, captures, pushes;
@@ -555,7 +575,7 @@ void MoveGenerator::populateQueenMoves(
         const Position& p,
         const Bitboard& pushMask,
         const Bitboard& captureMask,
-        const Bitboard& pinned) {
+        const Bitboard& pinned) const {
     Bitboard queenBitboard = p.pieceBitboards[Piece::blackQueen + p.colorToMove] & ~pinned;
     Bitboard opPieces = p.occupiedByColor[Color::white - p.colorToMove];
     Bitboard targets, captures, pushes;
@@ -583,7 +603,7 @@ Bitboard MoveGenerator::populatePinnedPieceMoves(
         std::vector<Move>& moveList,
         const Position& p,
         const Bitboard& pushMask,
-        const Bitboard& captureMask) {
+        const Bitboard& captureMask) const {
     Square kingSquare = p.pieceBitboards[Piece::blackKing + p.colorToMove].lsb();
     Bitboard opRQ = p.pieceBitboards[Piece::whiteRook - p.colorToMove];
     Bitboard opBQ = p.pieceBitboards[Piece::whiteBishop - p.colorToMove];
@@ -624,8 +644,9 @@ Bitboard MoveGenerator::populatePinnedPieceMoves(
                 if (!dppPushes.isEmpty()) {
                     moveList.push_back(Move(pinnedSquare, dppPushes.lsb(), Move::MoveType::doublePawnPush));
                 }
-                captures = pawnCaptures(Bitboard(pinnedSquare), p.colorToMove) & updatedCaptureMask;
-                if (p.enPassantTarget != Square::noSquare && updatedPushMask.isSet(p.enPassantTarget)) {
+                Bitboard naiveCaptures = pawnCaptures(Bitboard(pinnedSquare), p.colorToMove);
+                captures = naiveCaptures & updatedCaptureMask;
+                if (p.enPassantTarget != Square::noSquare && updatedPushMask.isSet(p.enPassantTarget) && naiveCaptures.isSet(p.enPassantTarget)) {
                     moveList.push_back(Move(pinnedSquare, p.enPassantTarget, Move::MoveType::epCapture));
                 }
                 break;

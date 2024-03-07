@@ -8,8 +8,11 @@
 #include "bitboard.h"
 #include "castling_rights.h"
 #include "fen_parser.h"
+#include "move.h"
 #include "piece.h"
 #include "square.h"
+
+class MoveGenerator;
 
 class Position {
 private:
@@ -38,6 +41,12 @@ public:
 	Bitboard occupied;
 	Bitboard occupiedByColor [2];
 
+	std::vector<Move> moveHistory;
+	std::vector<CastlingRights> castlingRightsHistory;
+	std::vector<int> halfmoveClockHistory;
+	std::vector<Piece> capturedPieceHistory;
+	std::vector<Square> enPassantTargetHistory;
+
 	int fullMoveCounter;
 	int halfmoveClock;
 	Color colorToMove;
@@ -47,9 +56,19 @@ public:
 	Position();
 	Position(std::string fenString);
 
+	void makeMove(Move move);
+	void unmakeMove();
+
+	uint64_t perft(int depth, const MoveGenerator& m);
+	uint64_t perftWithMoveCounts(int depth, const MoveGenerator& m, std::map<Move::MoveType, int>& moveTypeMap);
+	void divide(int depth, const MoveGenerator& m, std::map<std::string, uint64_t>& nodesPerMove);
+
 	void print();
 	void printCombinedBitboards();
 	void printPieceList();
+
+	friend bool operator==(const Position& p1, const Position& p2);
+	friend bool operator!=(const Position& p1, const Position& p2);
 };
 
 #endif
